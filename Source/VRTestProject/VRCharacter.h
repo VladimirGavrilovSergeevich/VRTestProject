@@ -2,8 +2,11 @@
 
 #pragma once
 
+
+#include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "MotionControllerComponent.h"
 #include "VRCharacter.generated.h"
 
 UCLASS()
@@ -12,8 +15,26 @@ class VRTESTPROJECT_API AVRCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AVRCharacter();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UCameraComponent* VRCamera;
+private:
+	//UPROPERTY(EditDefaultsOnly, Category = "Hand")
+	UPROPERTY(EditDefaultsOnly, Category = "Hand")
+	UMotionControllerComponent* MotionControllerRight;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Hand")
+		UMotionControllerComponent* MotionControllerLeft;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Hand")
+		USkeletalMeshComponent* HandMeshRight;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Hand")
+		USkeletalMeshComponent* HandMeshLeft;
+	UPROPERTY(EditDefaultsOnly, Category = "Hand")
+	USceneComponent* Center;
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,5 +46,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 
 };
