@@ -19,6 +19,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UCameraComponent* VRCamera;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+		USkeletalMeshComponent* HandMeshRight;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+		USkeletalMeshComponent* HandMeshLeft;
 private:
 	//UPROPERTY(EditDefaultsOnly, Category = "Hand")
 	UPROPERTY(EditDefaultsOnly, Category = "Hand")
@@ -28,11 +34,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Hand")
 		UMotionControllerComponent* MotionControllerLeft;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Hand")
-		USkeletalMeshComponent* HandMeshRight;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Hand")
-		USkeletalMeshComponent* HandMeshLeft;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Hand")
 	USceneComponent* Center;
 
