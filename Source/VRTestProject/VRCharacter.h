@@ -2,7 +2,7 @@
 
 #pragma once
 
-
+#include "HandAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -33,14 +33,20 @@ public:
 		UMotionControllerComponent* MotionControllerLeft;
 
 		UPROPERTY()
-		UAnimInstance* LeftHandAnimInstance;
+		UHandAnimInstance* LeftHandAnimInstance;
 
 		UPROPERTY()
-		UAnimInstance* RightHandAnimInstance;
+		UHandAnimInstance* RightHandAnimInstance;
 private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Hand")
 	USceneComponent* Center;
+
+	UPROPERTY()
+	bool CanCharacterRotation;
+
+	UPROPERTY()
+	float MinRateForCharacterRotation;
 
 protected:
 	// Called when the game starts or when spawned
@@ -53,5 +59,24 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Hand")
+	void GripLeft(float Rate);
 
+	UFUNCTION(BlueprintCallable, Category = "Hand")
+	void GripRight(float Rate);
+
+	UFUNCTION(BlueprintCallable, Category = "Hand")
+	void TriggerLeft(float Rate);
+
+	UFUNCTION(BlueprintCallable, Category = "Hand")
+	void TriggerRight(float Rate);
+
+	UFUNCTION(BlueprintCallable, Category = "Hand")
+	void MoveForward(float Val);
+
+	UFUNCTION(BlueprintCallable, Category = "Hand")
+	void MoveRight(float Val);
+
+	UFUNCTION(BlueprintCallable, Category = "Hand")
+	void CharacterRotation(float Rate);
 };
