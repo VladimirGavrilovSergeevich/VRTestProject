@@ -2,15 +2,18 @@
 
 #pragma once
 
+
 #include "HandAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MotionControllerComponent.h"
+#include "Interfaces/InteractionWithObjects.h"
+
 #include "VRCharacter.generated.h"
 
 UCLASS()
-class VRTESTPROJECT_API AVRCharacter : public ACharacter
+class VRTESTPROJECT_API AVRCharacter : public ACharacter, public IInteractionWithObjects
 {
 	GENERATED_BODY()
 
@@ -79,4 +82,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Hand")
 	void CharacterRotation(float Rate);
+
+	//void Test() override;
+	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Interface")
+	void CheckInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName);
 };

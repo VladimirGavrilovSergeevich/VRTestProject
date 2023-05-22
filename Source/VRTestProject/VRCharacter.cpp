@@ -116,3 +116,22 @@ void AVRCharacter::CharacterRotation(float Rate)
 
 }
 
+//void AVRCharacter::Test()
+//{
+//}
+
+void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
+{
+	UE_LOG(LogTemp, Warning, TEXT("CulledPickUp"));
+//	Cast<UInteractionWithObjects>()
+}
+
+void AVRCharacter::CheckInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName)
+{
+	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(TestActor);
+	if (Interface)
+	{
+		Interface->PickUp(AttachTo,SocketName);
+	}
+}
+
