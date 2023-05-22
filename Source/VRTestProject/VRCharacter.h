@@ -17,7 +17,7 @@ class VRTESTPROJECT_API AVRCharacter : public ACharacter
 public:
 	AVRCharacter();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	    UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UCameraComponent* VRCamera;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
@@ -25,15 +25,19 @@ public:
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
 		USkeletalMeshComponent* HandMeshLeft;
-private:
-	//UPROPERTY(EditDefaultsOnly, Category = "Hand")
-	UPROPERTY(EditDefaultsOnly, Category = "Hand")
-	UMotionControllerComponent* MotionControllerRight;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UPROPERTY(EditDefaultsOnly, Category = "Hand")
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
+		UMotionControllerComponent* MotionControllerRight;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
 		UMotionControllerComponent* MotionControllerLeft;
 
+		UPROPERTY()
+		UAnimInstance* LeftHandAnimInstance;
+
+		UPROPERTY()
+		UAnimInstance* RightHandAnimInstance;
+private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Hand")
 	USceneComponent* Center;
