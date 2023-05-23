@@ -1,12 +1,15 @@
 
+#include "Engine/World.h"
 #include "VRCharacter.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
 AVRCharacter::AVRCharacter() :
 	//init Variable
 	CanCharacterRotation(false),
-	MinRateForCharacterRotation(0.3f)
+	MinRateForCharacterRotation(0.3f),
+	CanTryGrab(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -63,7 +66,40 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AVRCharacter::GripLeft(float Rate)
 {
+	if(IsValid(LeftHandAnimInstance))
+	{
+
+	
 	LeftHandAnimInstance->Grip = Rate;
+	if (LeftHandAnimInstance->Grip > 0.5f)
+	{
+		if (!IsValid(AttachedActorLeftHand))
+		{
+			AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
+			CheckInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+		}
+		
+	}
+	else
+	{
+		if (IsValid(AttachedActorLeftHand))
+		{
+			if (AttachedActorLeftHand->GetRootComponent()->GetAttachParent() == HandMeshLeft)
+			{
+				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+				if (Interface)
+				{
+					Interface->Drop();
+					AttachedActorLeftHand = nullptr;
+				}
+			}
+		}
+	}
+    }
+	else
+	{
+		LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
+	}
 }
 
 void AVRCharacter::GripRight(float Rate)
@@ -116,14 +152,12 @@ void AVRCharacter::CharacterRotation(float Rate)
 
 }
 
-//void AVRCharacter::Test()
-//{
-//}
-
 void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
 {
-	UE_LOG(LogTemp, Warning, TEXT("CulledPickUp"));
-//	Cast<UInteractionWithObjects>()
+}
+
+void AVRCharacter::Drop()
+{
 }
 
 void AVRCharacter::CheckInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName)
@@ -133,5 +167,42 @@ void AVRCharacter::CheckInterface(AActor* TestActor, USceneComponent* AttachTo, 
 	{
 		Interface->PickUp(AttachTo,SocketName);
 	}
+}
+
+AActor* AVRCharacter::GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh)
+{
+	AActor* NearestOverlappingActor = nullptr;
+	FVector LocalGrabPosition;
+	if(MotionController == MotionControllerLeft)
+	{
+		LocalGrabPosition = MotionControllerLeft->GetRightVector() * 5.0f + MotionController->GetComponentLocation();
+	}
+	else
+	{
+		LocalGrabPosition = MotionControllerRight->GetRightVector() * (-5.0f) + MotionController->GetComponentLocation();
+	}
+	TArray<FHitResult> OutActors;
+	FCollisionShape MySphere = FCollisionShape::MakeSphere(5.0f);
+	FCollisionQueryParams Params("GrabSphere", false, this);
+	if (GetWorld()->SweepMultiByObjectType(OutActors, LocalGrabPosition, LocalGrabPosition, FQuat::Identity, ECC_WorldDynamic, MySphere, Params))
+	{
+		float LocalNearestActorDistance = 1000000;
+		for (FHitResult CurrentActorResult : OutActors)
+		{
+			IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(CurrentActorResult.GetActor());
+			if (Interface)
+			{
+				float DistanceToCurrentActorResult = (CurrentActorResult.GetActor()->GetActorLocation() - LocalGrabPosition).Size();
+				if (DistanceToCurrentActorResult <= LocalNearestActorDistance)
+				{
+					LocalNearestActorDistance = DistanceToCurrentActorResult;
+					NearestOverlappingActor = CurrentActorResult.GetActor();
+				}
+				
+			}
+		}
+	}
+
+	return NearestOverlappingActor;
 }
 

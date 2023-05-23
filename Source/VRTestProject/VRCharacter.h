@@ -51,6 +51,12 @@ private:
 	UPROPERTY()
 	float MinRateForCharacterRotation;
 
+	UPROPERTY()
+		bool CanTryGrab;
+
+	UPROPERTY()
+		AActor* AttachedActorLeftHand;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -83,9 +89,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Hand")
 	void CharacterRotation(float Rate);
 
-	//void Test() override;
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
+
+	virtual void Drop() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	void CheckInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName);
+
+	UFUNCTION(BlueprintCallable, Category = "GrabItem")
+	AActor* GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh);
 };

@@ -24,4 +24,7 @@ public:
 
 	UFUNCTION()
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) = 0;
+
+	UFUNCTION()
+	virtual void Drop() = 0;
 };

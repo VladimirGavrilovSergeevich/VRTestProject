@@ -14,16 +14,20 @@ class VRTESTPROJECT_API APickUpCube : public AActor, public IInteractionWithObje
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	APickUpCube();
 
+  UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
+  UStaticMeshComponent* StaticMesh;
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
+
+	UFUNCTION()
+		virtual void Drop() override;
 };
