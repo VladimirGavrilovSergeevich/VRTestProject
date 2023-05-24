@@ -10,7 +10,8 @@ AVRCharacter::AVRCharacter() :
 	//init Variable
 	CanCharacterRotation(false),
 	MinRateForCharacterRotation(0.3f),
-	CanTryGrab(true)
+	CanTryGrabLeft(true),
+	CanTryGrabRight(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -69,6 +70,11 @@ void AVRCharacter::GripLeft(float Rate)
 	LeftHandAnimInstance->Grip = Rate;
 	if (GetLeftGripValue() > 0.5f)
 	{
+		if (!CanTryGrabLeft)
+		{
+			return;
+		}
+		CanTryGrabLeft = false;
 		if (AttachedActorLeftHand == nullptr)
 		{
 			AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
@@ -77,7 +83,12 @@ void AVRCharacter::GripLeft(float Rate)
 				CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
 				if (AttachedActorRightHand == AttachedActorLeftHand)
 				{
+					
 					AttachedActorRightHand = nullptr;
+				}
+				if (AttachedActorLeftHand != nullptr)
+				{
+				//	CanTryGrabLeft = false;
 				}
 			}
 
@@ -105,9 +116,11 @@ void AVRCharacter::GripLeft(float Rate)
 				{
 					Interface->Drop();
 					AttachedActorLeftHand = nullptr;
+					CanTryGrabLeft = true;
 				}
 			//}
 		}
+		CanTryGrabLeft = true;
 	}
   }
 	
@@ -158,6 +171,11 @@ void AVRCharacter::GripRight(float Rate)
 		RightHandAnimInstance->Grip = Rate;
 		if (GetRightGripValue() > 0.5f)
 		{
+			if (!CanTryGrabRight)
+			{
+				return;
+			}
+			CanTryGrabRight = false;
 			if (AttachedActorRightHand == nullptr)
 			{
 				AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
@@ -167,6 +185,11 @@ void AVRCharacter::GripRight(float Rate)
 					if (AttachedActorLeftHand == AttachedActorRightHand)
 					{
 						AttachedActorLeftHand = nullptr;
+			
+					}
+					if (AttachedActorRightHand != nullptr)
+					{
+					//	CanTryGrabRight = false;
 					}
 				}
 			}
@@ -182,9 +205,11 @@ void AVRCharacter::GripRight(float Rate)
 				{
 					Interface->Drop();
 					AttachedActorRightHand = nullptr;
+					CanTryGrabRight = true;
 				}
 				//}
 			}
+			CanTryGrabRight = true;
 		}
 	}
 }

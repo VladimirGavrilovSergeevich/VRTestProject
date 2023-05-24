@@ -17,8 +17,8 @@ class VRTESTPROJECT_API UHandAnimInstance : public UAnimInstance
 public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float Grip;
+	float Grip = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	float Trigger;
+	float Trigger = 0;
 };

@@ -52,7 +52,10 @@ private:
 	float MinRateForCharacterRotation;
 
 	UPROPERTY()
-	bool CanTryGrab;
+	bool CanTryGrabLeft;
+
+	UPROPERTY()
+	bool CanTryGrabRight;
 
 	UPROPERTY()
 	AActor* AttachedActorLeftHand;
