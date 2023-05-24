@@ -1,8 +1,9 @@
 
-#include "Engine/World.h"
 #include "VRCharacter.h"
+#include "Engine/World.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+
 
 
 AVRCharacter::AVRCharacter() :
@@ -30,17 +31,14 @@ AVRCharacter::AVRCharacter() :
 
 	HandMeshLeft = CreateDefaultSubobject<USkeletalMeshComponent>("HandMeshLeft");
 	HandMeshLeft->SetupAttachment(MotionControllerLeft);
-
-	
-	LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
-	RightHandAnimInstance = Cast<UHandAnimInstance>(HandMeshRight->GetAnimInstance());
-
 }
 
 void AVRCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//init Variable after Cast
+	LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
+	RightHandAnimInstance = Cast<UHandAnimInstance>(HandMeshRight->GetAnimInstance());
 }
 
 void AVRCharacter::Tick(float DeltaTime)
@@ -66,45 +64,129 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AVRCharacter::GripLeft(float Rate)
 {
-	if(IsValid(LeftHandAnimInstance))
-	{
-
-	
+  if(IsValid(LeftHandAnimInstance))
+  {
 	LeftHandAnimInstance->Grip = Rate;
-	if (LeftHandAnimInstance->Grip > 0.5f)
+	if (GetLeftGripValue() > 0.5f)
 	{
-		if (!IsValid(AttachedActorLeftHand))
+		if (AttachedActorLeftHand == nullptr)
 		{
 			AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
-			CheckInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-		}
-		
+			if (AttachedActorLeftHand != nullptr)
+			{
+				CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+				if (AttachedActorRightHand == AttachedActorLeftHand)
+				{
+					AttachedActorRightHand = nullptr;
+				}
+			}
+
+			//if (AttachedActorRightHand == AttachedActorLeftHand)
+			//{
+			//	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+			//	if (Interface)
+			//	{
+			//		Interface->Drop();
+			//		AttachedActorRightHand = nullptr;
+			//	}
+			//}
+			
+			//CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+		}	
 	}
 	else
 	{
-		if (IsValid(AttachedActorLeftHand))
+		if (AttachedActorLeftHand != nullptr)
 		{
-			if (AttachedActorLeftHand->GetRootComponent()->GetAttachParent() == HandMeshLeft)
-			{
+			//if (AttachedActorLeftHand->GetRootComponent()->GetAttachParent() == HandMeshLeft)
+			//{
 				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
 				if (Interface)
 				{
 					Interface->Drop();
 					AttachedActorLeftHand = nullptr;
 				}
-			}
+			//}
 		}
 	}
-    }
-	else
-	{
-		LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
-	}
+  }
+	
 }
 
 void AVRCharacter::GripRight(float Rate)
 {
-	RightHandAnimInstance->Grip = Rate;
+/*	if (IsValid(RightHandAnimInstance))
+	{
+		RightHandAnimInstance->Grip = Rate;
+		if (GetRightGripValue() > 0.5f)
+		{
+			if (!IsValid(AttachedActorRightHand))
+			{
+				AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
+				if (AttachedActorLeftHand == AttachedActorRightHand)
+				{
+					IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+					if (Interface)
+					{
+						Interface->Drop();
+						AttachedActorLeftHand = nullptr;
+					}
+				}
+
+				CheckAndCallPickUpViaInterface(AttachedActorRightHand, HandMeshRight, "None");
+			}
+		}
+		else
+		{
+			if (IsValid(AttachedActorRightHand))
+			{
+				if (AttachedActorRightHand->GetRootComponent()->GetAttachParent() == HandMeshRight)
+				{
+					IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+					if (Interface)
+					{
+						Interface->Drop();
+						AttachedActorRightHand = nullptr;
+					}
+				}
+			}
+		}
+	}
+	*/
+	if (IsValid(RightHandAnimInstance))
+	{
+		RightHandAnimInstance->Grip = Rate;
+		if (GetRightGripValue() > 0.5f)
+		{
+			if (AttachedActorRightHand == nullptr)
+			{
+				AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
+				if (AttachedActorRightHand != nullptr)
+				{
+					CheckAndCallPickUpViaInterface(AttachedActorRightHand, HandMeshRight, "None");
+					if (AttachedActorLeftHand == AttachedActorRightHand)
+					{
+						AttachedActorLeftHand = nullptr;
+					}
+				}
+			}
+		}
+		else
+		{
+			if (AttachedActorRightHand != nullptr)
+			{
+				//if (AttachedActorLeftHand->GetRootComponent()->GetAttachParent() == HandMeshLeft)
+				//{
+				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+				if (Interface)
+				{
+					Interface->Drop();
+					AttachedActorRightHand = nullptr;
+				}
+				//}
+			}
+		}
+	}
 }
 
 void AVRCharacter::TriggerLeft(float Rate)
@@ -149,7 +231,16 @@ void AVRCharacter::CharacterRotation(float Rate)
 		AddControllerYawInput(-30);
 		CanCharacterRotation = false;
 	}
+}
 
+float AVRCharacter::GetLeftGripValue()
+{
+	return LeftHandAnimInstance->Grip;
+}
+
+float AVRCharacter::GetRightGripValue()
+{
+	return RightHandAnimInstance->Grip;
 }
 
 void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
@@ -160,7 +251,7 @@ void AVRCharacter::Drop()
 {
 }
 
-void AVRCharacter::CheckInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName)
+void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName)
 {
 	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(TestActor);
 	if (Interface)
@@ -198,11 +289,12 @@ AActor* AVRCharacter::GetGrabItemNearMotionController(UMotionControllerComponent
 					LocalNearestActorDistance = DistanceToCurrentActorResult;
 					NearestOverlappingActor = CurrentActorResult.GetActor();
 				}
-				
+				//CheckingAndCallEventInInterface(Interface->EventInInterface())
 			}
 		}
 	}
 
 	return NearestOverlappingActor;
 }
+
 
