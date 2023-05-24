@@ -65,107 +65,49 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AVRCharacter::GripLeft(float Rate)
 {
-  if(IsValid(LeftHandAnimInstance))
-  {
-	LeftHandAnimInstance->Grip = Rate;
-	if (GetLeftGripValue() > 0.5f)
-	{
-		if (!CanTryGrabLeft)
-		{
-			return;
-		}
-		CanTryGrabLeft = false;
-		if (AttachedActorLeftHand == nullptr)
-		{
-			AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
-			if (AttachedActorLeftHand != nullptr)
-			{
-				CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-				if (AttachedActorRightHand == AttachedActorLeftHand)
-				{
+    if(IsValid(LeftHandAnimInstance))
+    {
+	    LeftHandAnimInstance->Grip = Rate;
+	    if (GetLeftGripValue() > 0.5f)
+	    {
+		    if (!CanTryGrabLeft)
+		    {
+	 	  	return;
+		    }
+		    CanTryGrabLeft = false;
+		    if (AttachedActorLeftHand == nullptr)
+		    {
+			    AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
+			    if (AttachedActorLeftHand != nullptr)
+			    {
+					//Cast<>(AttachedActorLeftHand)
+			   	  CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+				    if (AttachedActorRightHand == AttachedActorLeftHand)
+				    {
 					
-					AttachedActorRightHand = nullptr;
-				}
-				if (AttachedActorLeftHand != nullptr)
-				{
-				//	CanTryGrabLeft = false;
-				}
-			}
-
-			//if (AttachedActorRightHand == AttachedActorLeftHand)
-			//{
-			//	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-			//	if (Interface)
-			//	{
-			//		Interface->Drop();
-			//		AttachedActorRightHand = nullptr;
-			//	}
-			//}
-			
-			//CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-		}	
-	}
-	else
-	{
-		if (AttachedActorLeftHand != nullptr)
-		{
-			//if (AttachedActorLeftHand->GetRootComponent()->GetAttachParent() == HandMeshLeft)
-			//{
+				 	AttachedActorRightHand = nullptr;
+				    }
+			    }
+		    }	
+	    }
+	    else
+	    {
+		    if (AttachedActorLeftHand != nullptr)
+		    {
 				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
 				if (Interface)
 				{
 					Interface->Drop();
 					AttachedActorLeftHand = nullptr;
-					CanTryGrabLeft = true;
-				}
-			//}
-		}
-		CanTryGrabLeft = true;
-	}
-  }
-	
+				}		
+		    }
+    	 CanTryGrabLeft = true;
+	    }
+    }
 }
 
 void AVRCharacter::GripRight(float Rate)
 {
-/*	if (IsValid(RightHandAnimInstance))
-	{
-		RightHandAnimInstance->Grip = Rate;
-		if (GetRightGripValue() > 0.5f)
-		{
-			if (!IsValid(AttachedActorRightHand))
-			{
-				AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
-				if (AttachedActorLeftHand == AttachedActorRightHand)
-				{
-					IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-					if (Interface)
-					{
-						Interface->Drop();
-						AttachedActorLeftHand = nullptr;
-					}
-				}
-
-				CheckAndCallPickUpViaInterface(AttachedActorRightHand, HandMeshRight, "None");
-			}
-		}
-		else
-		{
-			if (IsValid(AttachedActorRightHand))
-			{
-				if (AttachedActorRightHand->GetRootComponent()->GetAttachParent() == HandMeshRight)
-				{
-					IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-					if (Interface)
-					{
-						Interface->Drop();
-						AttachedActorRightHand = nullptr;
-					}
-				}
-			}
-		}
-	}
-	*/
 	if (IsValid(RightHandAnimInstance))
 	{
 		RightHandAnimInstance->Grip = Rate;
@@ -185,11 +127,6 @@ void AVRCharacter::GripRight(float Rate)
 					if (AttachedActorLeftHand == AttachedActorRightHand)
 					{
 						AttachedActorLeftHand = nullptr;
-			
-					}
-					if (AttachedActorRightHand != nullptr)
-					{
-					//	CanTryGrabRight = false;
 					}
 				}
 			}
@@ -198,16 +135,12 @@ void AVRCharacter::GripRight(float Rate)
 		{
 			if (AttachedActorRightHand != nullptr)
 			{
-				//if (AttachedActorLeftHand->GetRootComponent()->GetAttachParent() == HandMeshLeft)
-				//{
 				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
 				if (Interface)
 				{
 					Interface->Drop();
 					AttachedActorRightHand = nullptr;
-					CanTryGrabRight = true;
-				}
-				//}
+				}	
 			}
 			CanTryGrabRight = true;
 		}
