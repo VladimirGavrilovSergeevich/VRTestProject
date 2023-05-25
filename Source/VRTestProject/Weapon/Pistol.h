@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "CharacterBullet.h"
 #include "Interfaces/InteractionWithObjects.h"
 #include "CoreMinimal.h"
 #include "Weapon/Weapon.h"
@@ -27,9 +28,15 @@ class VRTESTPROJECT_API APistol : public AWeapon, public IInteractionWithObjects
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
 	FName CurrentObjectSocketName{ "PistolSocket" };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ACharacterBullet> BP_CharacterBullet;
+
 	UFUNCTION()
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
 
 	UFUNCTION()
 	virtual void Drop() override;
+
+	UFUNCTION()
+	virtual void Fire() override;
 };

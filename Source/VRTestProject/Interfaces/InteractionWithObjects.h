@@ -27,4 +27,7 @@ public:
 
 	UFUNCTION()
 	virtual void Drop() = 0;
+
+	UFUNCTION()
+	virtual void Fire() = 0;
 };

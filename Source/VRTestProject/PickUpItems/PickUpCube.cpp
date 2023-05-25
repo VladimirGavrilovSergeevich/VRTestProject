@@ -32,3 +32,7 @@ void APickUpCube::Drop()
 	StaticMesh->SetSimulatePhysics(true);
 }
 
+void APickUpCube::Fire()
+{
+}
+

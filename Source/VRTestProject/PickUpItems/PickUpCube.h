@@ -32,5 +32,8 @@ public:
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
 
 	UFUNCTION()
-		virtual void Drop() override;
+	virtual void Drop() override;
+
+	UFUNCTION()
+	virtual void Fire() override;
 };

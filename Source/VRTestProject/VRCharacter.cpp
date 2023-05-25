@@ -1,8 +1,10 @@
 
 #include "VRCharacter.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Enemy/EnemyBullet.h"
 
 
 
@@ -11,7 +13,9 @@ AVRCharacter::AVRCharacter() :
 	CanCharacterRotation(false),
 	MinRateForCharacterRotation(0.3f),
 	CanTryGrabLeft(true),
-	CanTryGrabRight(true)
+	CanTryGrabRight(true),
+	CanTryTriggerLeft(true),
+	CanTryTriggerRight(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -32,6 +36,8 @@ AVRCharacter::AVRCharacter() :
 
 	HandMeshLeft = CreateDefaultSubobject<USkeletalMeshComponent>("HandMeshLeft");
 	HandMeshLeft->SetupAttachment(MotionControllerLeft);
+
+	OnActorHit.AddDynamic(this, &AVRCharacter::OnHit);
 }
 
 void AVRCharacter::BeginPlay()
@@ -80,7 +86,6 @@ void AVRCharacter::GripLeft(float Rate)
 			    AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
 			    if (AttachedActorLeftHand != nullptr)
 			    {
-					//Cast<>(AttachedActorLeftHand)
 			   	  CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
 				    if (AttachedActorRightHand == AttachedActorLeftHand)
 				    {
@@ -150,11 +155,62 @@ void AVRCharacter::GripRight(float Rate)
 void AVRCharacter::TriggerLeft(float Rate)
 {
 	LeftHandAnimInstance->Trigger = Rate;
+
+	if (IsValid(LeftHandAnimInstance))
+	{
+		LeftHandAnimInstance->Trigger = Rate;
+		if (LeftHandAnimInstance->Trigger > 0.5f)
+		{
+			if (!CanTryTriggerLeft)
+			{
+				return;
+			}
+			CanTryTriggerLeft = false;
+			if (AttachedActorLeftHand != nullptr)
+			{
+				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+				if (Interface)
+				{
+					Interface->Fire();
+					CanTryTriggerLeft = false;
+					return;
+				}
+				
+			}
+			
+		}
+		CanTryTriggerLeft = true;
+	}
 }
 
 void AVRCharacter::TriggerRight(float Rate)
 {
 	RightHandAnimInstance->Trigger = Rate;
+
+	if (IsValid(RightHandAnimInstance))
+	{
+		RightHandAnimInstance->Trigger = Rate;
+		if (RightHandAnimInstance->Trigger > 0.5f)
+		{
+			if (!CanTryTriggerRight)
+			{
+				return;
+			}		
+			if (AttachedActorRightHand != nullptr)
+			{
+				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+				if (Interface)
+				{
+					Interface->Fire();
+					CanTryTriggerRight = false;
+					return;
+				}
+				
+			}
+
+		}
+		CanTryTriggerRight = true;
+	}
 }
 
 void AVRCharacter::MoveForward(float Value)
@@ -254,5 +310,27 @@ AActor* AVRCharacter::GetGrabItemNearMotionController(UMotionControllerComponent
 
 	return NearestOverlappingActor;
 }
+
+void AVRCharacter::Fire()
+{
+}
+
+void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+{
+	bool a = OtherActor->GetClass()->IsChildOf(AEnemyBullet::StaticClass());
+	if(!a)
+	//if (OtherActor->GetClass() == TSubclassOf<AEnemyBullet::StaticClass()>);
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Damage"));
+		return;
+	}
+	Helth = Helth - 10;
+
+	if (Helth <= 0)
+	{
+		UGameplayStatics::OpenLevel(GetWorld(),"MainMap");
+	}
+}
+
 
 

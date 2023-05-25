@@ -58,10 +58,19 @@ private:
 	bool CanTryGrabRight;
 
 	UPROPERTY()
+	bool CanTryTriggerRight;
+
+	UPROPERTY()
+	bool CanTryTriggerLeft;
+
+	UPROPERTY()
 	AActor* AttachedActorLeftHand;
 
 	UPROPERTY()
 	AActor* AttachedActorRightHand;
+
+	UPROPERTY()
+		float Helth{100};
 
 
 protected:
@@ -103,10 +112,15 @@ public:
 
 	virtual void Drop() override;
 
+	virtual void Fire() override;
+
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	void CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName);
 
 	UFUNCTION(BlueprintCallable, Category = "GrabItem")
 	AActor* GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh);
+
+	UFUNCTION()
+		void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 	
 };
