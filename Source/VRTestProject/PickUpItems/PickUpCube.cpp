@@ -22,7 +22,7 @@ void APickUpCube::Tick(float DeltaTime)
 void APickUpCube::PickUp(USceneComponent* AttachTo, FName SocketName)
 {
 	StaticMesh->SetSimulatePhysics(false);
-	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true), NAME_None);
+	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::KeepWorld, true), CurrentObjectSocketName);
 	UE_LOG(LogTemp, Warning, TEXT("PickUpCube"));
 }
 

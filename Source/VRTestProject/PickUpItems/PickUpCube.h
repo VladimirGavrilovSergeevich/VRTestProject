@@ -19,6 +19,9 @@ public:
   UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
   UStaticMeshComponent* StaticMesh;
 
+  UPROPERTY()
+  FName CurrentObjectSocketName{"None"};
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -63,6 +63,7 @@ private:
 	UPROPERTY()
 	AActor* AttachedActorRightHand;
 
+
 protected:
 	virtual void BeginPlay() override;
 

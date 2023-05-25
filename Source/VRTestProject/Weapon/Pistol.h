@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Interfaces/InteractionWithObjects.h"
 #include "CoreMinimal.h"
 #include "Weapon/Weapon.h"
 #include "Pistol.generated.h"
@@ -10,7 +11,7 @@
  * 
  */
 UCLASS()
-class VRTESTPROJECT_API APistol : public AWeapon
+class VRTESTPROJECT_API APistol : public AWeapon, public IInteractionWithObjects
 {
 	GENERATED_BODY()
 
@@ -22,4 +23,13 @@ class VRTESTPROJECT_API APistol : public AWeapon
 
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
 	USceneComponent* GunMuzzle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
+	FName CurrentObjectSocketName{ "PistolSocket" };
+
+	UFUNCTION()
+	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
+
+	UFUNCTION()
+	virtual void Drop() override;
 };

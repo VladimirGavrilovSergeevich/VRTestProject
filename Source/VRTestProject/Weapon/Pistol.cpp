@@ -11,3 +11,16 @@ APistol::APistol()
 	GunMuzzle = CreateDefaultSubobject<USceneComponent>("GunMuzzle");
 	GunMuzzle->SetupAttachment(StaticMesh);
 }
+
+void APistol::PickUp(USceneComponent* AttachTo, FName SocketName)
+{
+	StaticMesh->SetSimulatePhysics(false);
+	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), CurrentObjectSocketName);
+	UE_LOG(LogTemp, Warning, TEXT("PickUpPistol"));
+}
+
+void APistol::Drop()
+{
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	StaticMesh->SetSimulatePhysics(true);
+}
