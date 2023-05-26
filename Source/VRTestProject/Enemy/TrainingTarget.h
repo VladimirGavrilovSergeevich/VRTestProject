@@ -6,9 +6,7 @@
 #include "Enemy/Enemy.h"
 #include "TrainingTarget.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class VRTESTPROJECT_API ATrainingTarget : public AEnemy
 {
@@ -47,10 +45,12 @@ public:
 	FTimerHandle FTimerHandleColorChangeToCalm;
 
 
-	UFUNCTION()
+	//UFUNCTION()
 	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION()
 	void ColorChangeToCalm();
+
+	virtual void Tick(float DeltaTime) override;
 
 };

@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "Kismet/GameplayStatics.h"
+#include "Enemy/EnemyBullet.h"
+#include "VRCharacter.h"
 #include "CoreMinimal.h"
 #include "Enemy/TrainingTarget.h"
 #include "EnemyRhombus.generated.h"
@@ -34,4 +37,30 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
 	USceneComponent* SceneComponent2;
+
+	UPROPERTY()
+	FTimerHandle FTimerHandleColorChangeToCalmMuzzle;
+
+	UPROPERTY()
+	FTimerHandle FTimerHandleFire;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AEnemyBullet> BP_EnemyBullet;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AVRCharacter* CharacterRef = nullptr;
+
+	UFUNCTION()
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void ColorChangeToCalmMuzzle();
+
+	UFUNCTION()
+	void Fire();
+
+	virtual void Tick(float DeltaTime) override;
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 };

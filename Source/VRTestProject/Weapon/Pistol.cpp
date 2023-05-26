@@ -29,13 +29,8 @@ void APistol::Fire()
 {
 	FVector LocationStartBullet = GunMuzzle->GetComponentLocation();
 	FRotator RotationStartBullet = GunMuzzle->GetComponentRotation();
-	//FVector ScaleStartBullet{ 0.1f,0.1f,0.1f };
-	//FVector Scale3D(0.1f);
-	//FTransform TransformForSpawnBullet;
-	//TransformForSpawnBullet(Scale3D(0.1f)); //= FTransform(LocationStartBullet ,RotationStartBullet, FVector Scale3D(0.1f);
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	//GetWorld()->SpawnActor<ACharacterBullet>()
 
 	GetWorld()->SpawnActor<ACharacterBullet>(BP_CharacterBullet,LocationStartBullet, RotationStartBullet, SpawnInfo);
 }

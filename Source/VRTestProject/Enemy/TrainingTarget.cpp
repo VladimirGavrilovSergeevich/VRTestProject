@@ -3,9 +3,9 @@
 
 #include "Enemy/TrainingTarget.h"
 
-ATrainingTarget::ATrainingTarget()
+ATrainingTarget::ATrainingTarget() : Super()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	Root = CreateDefaultSubobject<USceneComponent>("Root");
 	Root->SetupAttachment(RootComponent);
 	StaticMesh1 = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh1");
@@ -19,7 +19,7 @@ ATrainingTarget::ATrainingTarget()
 	StaticMesh5 = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh5");
 	StaticMesh5->SetupAttachment(Root);
 
-	OnActorHit.AddDynamic(this, &ATrainingTarget::OnHit);
+	//OnActorHit.AddDynamic(this, &ATrainingTarget::OnHit);
 }
 
 void ATrainingTarget::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
@@ -47,4 +47,9 @@ void ATrainingTarget::ColorChangeToCalm()
 
 	ParameterValue = 0;
 
+}
+
+void ATrainingTarget::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
