@@ -317,16 +317,13 @@ void AVRCharacter::Fire()
 
 void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
-	bool a = OtherActor->GetClass()->IsChildOf(AEnemyBullet::StaticClass());
-	if(!a)
-	//if (OtherActor->GetClass() == TSubclassOf<AEnemyBullet::StaticClass()>);
+	if(!OtherActor->GetClass()->IsChildOf(AEnemyBullet::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Damage"));
 		return;
 	}
-	Helth = Helth - 10;
+	Health = Health - 10;
 
-	if (Helth <= 0)
+	if (Health <= 0)
 	{
 		UGameplayStatics::OpenLevel(GetWorld(),"MainMap");
 	}
