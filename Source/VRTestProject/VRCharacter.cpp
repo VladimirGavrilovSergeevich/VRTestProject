@@ -55,7 +55,6 @@ void AVRCharacter::Tick(float DeltaTime)
 
 void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	//Super::SetupPlayerInputComponent(PlayerInputComponent);
 	// Bind HandAnimation == Grab/Fire events
 	PlayerInputComponent->BindAxis("GripLeft",this, &AVRCharacter::GripLeft);
 	PlayerInputComponent->BindAxis("GripRight", this, &AVRCharacter::GripRight);
