@@ -19,7 +19,7 @@ ATrainingTarget::ATrainingTarget() : Super()
 	StaticMesh5 = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh5");
 	StaticMesh5->SetupAttachment(Root);
 
-	//OnActorHit.AddDynamic(this, &ATrainingTarget::OnHit);
+	OnActorHit.AddDynamic(this, &ATrainingTarget::OnHit);
 }
 
 void ATrainingTarget::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)

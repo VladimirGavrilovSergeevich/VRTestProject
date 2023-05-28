@@ -303,7 +303,6 @@ AActor* AVRCharacter::GetGrabItemNearMotionController(UMotionControllerComponent
 					LocalNearestActorDistance = DistanceToCurrentActorResult;
 					NearestOverlappingActor = CurrentActorResult.GetActor();
 				}
-				//CheckingAndCallEventInInterface(Interface->EventInInterface())
 			}
 		}
 	}

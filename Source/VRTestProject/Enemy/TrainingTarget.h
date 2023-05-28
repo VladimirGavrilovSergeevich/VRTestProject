@@ -44,9 +44,8 @@ public:
 	UPROPERTY()
 	FTimerHandle FTimerHandleColorChangeToCalm;
 
-
-	//UFUNCTION()
-	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+	UFUNCTION()
+	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 	UFUNCTION()
 	void ColorChangeToCalm();

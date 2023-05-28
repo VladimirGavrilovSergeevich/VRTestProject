@@ -44,23 +44,29 @@ public:
 	UPROPERTY()
 	FTimerHandle FTimerHandleFire;
 
+	UPROPERTY()
+	FTimerHandle FTimerHandleStopFire;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AEnemyBullet> BP_EnemyBullet;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AVRCharacter* CharacterRef = nullptr;
 
-	UFUNCTION()
-	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+	UPROPERTY()
+	bool FireOn = false;
+
+	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit) override;
 
 	UFUNCTION()
 	void ColorChangeToCalmMuzzle();
 
+	virtual void Fire();
+
 	UFUNCTION()
-	void Fire();
+	void StopFire();
 
 	virtual void Tick(float DeltaTime) override;
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 };
