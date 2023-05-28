@@ -7,6 +7,7 @@
 
 ABigTank::ABigTank():Super()
 {
+	//resetup components
 	StaticMesh3->SetupAttachment(Root);
 	StaticMesh8->SetupAttachment(StaticMesh3);
 	StaticMesh2->SetupAttachment(StaticMesh3);
@@ -19,11 +20,10 @@ void ABigTank::Tick(float DeltaTime)
 {
 	if (IsValid(CharacterRef))
 	{
-		AddActorLocalOffset(FVector(((cos(GetGameTimeSinceCreation() / 10) * 100 * DeltaTime)), 0, 0));
-		FRotator RotationStartRhombus(0, UKismetMathLibrary::FindLookAtRotation(StaticMesh3->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw, 0);
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		StaticMesh3->SetWorldRotation(RotationStartRhombus);
+		AddActorLocalOffset(FVector(((cos(GetGameTimeSinceCreation() / 10) * 100 * DeltaTime)), 0, 0));// motion actor
+
+		FRotator RotationTankGun(0, UKismetMathLibrary::FindLookAtRotation(StaticMesh3->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw, 0); 
+		StaticMesh3->SetWorldRotation(RotationTankGun); // turn to character
 	}
 }
 
@@ -31,10 +31,11 @@ void ABigTank::Fire()
 {
 	if (IsValid(CharacterRef))
 	{
-		FRotator RotationStartRhombus(0, UKismetMathLibrary::FindLookAtRotation(SceneComponent2->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw, 0);
+		FRotator RotationStartRhombus(0, UKismetMathLibrary::FindLookAtRotation(SceneComponent2->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw, 0);// bullet turn to character
+
 		FActorSpawnParameters SpawnInfo;
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		AEnemyBullet* CurrentEnemyBullet = GetWorld()->SpawnActor<AEnemyBullet>(BP_EnemyBullet, SceneComponent2->GetComponentLocation(), RotationStartRhombus, SpawnInfo);
+		AEnemyBullet* CurrentEnemyBullet = GetWorld()->SpawnActor<AEnemyBullet>(BP_EnemyBullet, SceneComponent2->GetComponentLocation(), RotationStartRhombus, SpawnInfo);//fire
 		CurrentEnemyBullet->SetActorScale3D(FVector(1.0f));
 
 	}

@@ -9,9 +9,6 @@
 #include "Enemy/TrainingTarget.h"
 #include "EnemyRhombus.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class VRTESTPROJECT_API AEnemyRhombus : public ATrainingTarget
 {
@@ -20,16 +17,16 @@ class VRTESTPROJECT_API AEnemyRhombus : public ATrainingTarget
 public:
 	AEnemyRhombus();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh6;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh7;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh8;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh9;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
@@ -38,6 +35,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
 	USceneComponent* SceneComponent2;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AEnemyBullet> BP_EnemyBullet;
+
+	UPROPERTY()
+	AVRCharacter* CharacterRef = nullptr;
+
+private:
 	UPROPERTY()
 	FTimerHandle FTimerHandleColorChangeToCalmMuzzle;
 
@@ -47,26 +52,22 @@ public:
 	UPROPERTY()
 	FTimerHandle FTimerHandleStopFire;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<AEnemyBullet> BP_EnemyBullet;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AVRCharacter* CharacterRef = nullptr;
-
 	UPROPERTY()
 	bool FireOn = false;
-
-	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit) override;
-
-	UFUNCTION()
-	void ColorChangeToCalmMuzzle();
-
-	virtual void Fire();
 
 	UFUNCTION()
 	void StopFire();
 
+public:
+
+	UFUNCTION()
+	virtual void Fire();
+
 	virtual void Tick(float DeltaTime) override;
-	// Called when the game starts or when spawned
+	
+protected:
+
+	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit) override;
+
 	virtual void BeginPlay() override;
 };

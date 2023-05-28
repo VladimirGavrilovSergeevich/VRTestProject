@@ -14,22 +14,21 @@ AVRCharacter::AVRCharacter() :
 	MinRateForCharacterRotation(0.3f),
 	CanTryGrabLeft(true),
 	CanTryGrabRight(true),
+	CanTryTriggerRight(true),
 	CanTryTriggerLeft(true),
-	CanTryTriggerRight(true)
+	Health(100)
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
+	//init and attach components
 	VRCamera = CreateDefaultSubobject<UCameraComponent>("VRCamera");
 	VRCamera->SetupAttachment(RootComponent);
 
-	Center = CreateDefaultSubobject<USceneComponent>("Center");
-	Center->SetupAttachment(RootComponent);
-
 	MotionControllerRight = CreateDefaultSubobject<UMotionControllerComponent>("MotionControllerRight");
-	MotionControllerRight->SetupAttachment(Center);
+	MotionControllerRight->SetupAttachment(RootComponent);
 
 	MotionControllerLeft = CreateDefaultSubobject<UMotionControllerComponent>("MotionControllerLeft");
-	MotionControllerLeft->SetupAttachment(Center);
+	MotionControllerLeft->SetupAttachment(RootComponent);
 
 	HandMeshRight = CreateDefaultSubobject<USkeletalMeshComponent>("HandMeshRight");
 	HandMeshRight->SetupAttachment(MotionControllerRight);
@@ -71,146 +70,157 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AVRCharacter::GripLeft(float Rate)
 {
-    if(IsValid(LeftHandAnimInstance))
-    {
-	    LeftHandAnimInstance->Grip = Rate;
-	    if (GetLeftGripValue() > 0.5f)
-	    {
-		    if (!CanTryGrabLeft)
-		    {
-	 	  	return;
-		    }
-		    CanTryGrabLeft = false;
-		    if (AttachedActorLeftHand == nullptr)
-		    {
-			    AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
-			    if (AttachedActorLeftHand != nullptr)
-			    {
-			   	  CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-				    if (AttachedActorRightHand == AttachedActorLeftHand)
-				    {
-					
-				 	AttachedActorRightHand = nullptr;
-				    }
-			    }
-		    }	
-	    }
-	    else
-	    {
-		    if (AttachedActorLeftHand != nullptr)
-		    {
-				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-				if (Interface)
-				{
-					Interface->Drop();
-					AttachedActorLeftHand = nullptr;
-				}		
-		    }
-    	 CanTryGrabLeft = true;
-	    }
+	if (!IsValid(LeftHandAnimInstance))
+	{
+		return;
+	}
+
+	LeftHandAnimInstance->Grip = Rate;
+
+	if (LeftHandAnimInstance->Grip > 0.5f)
+	{
+		if (!CanTryGrabLeft)
+		{
+	 	    return;
+		}
+		CanTryGrabLeft = false;
+		if (AttachedActorLeftHand != nullptr)
+		{
+		    return;
+		}
+		AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
+		if (AttachedActorLeftHand == nullptr)
+		{
+		    return;
+		}
+		CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+		if (AttachedActorRightHand == AttachedActorLeftHand)
+		{
+		    AttachedActorRightHand = nullptr;
+		}	      
     }
+	else
+	{
+		CanTryGrabLeft = true;
+
+		if (AttachedActorLeftHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+		if (Interface)
+		{
+			Interface->Drop();
+			AttachedActorLeftHand = nullptr;
+		}
+	}
 }
 
 void AVRCharacter::GripRight(float Rate)
 {
-	if (IsValid(RightHandAnimInstance))
+	if (!IsValid(RightHandAnimInstance))
 	{
-		RightHandAnimInstance->Grip = Rate;
-		if (GetRightGripValue() > 0.5f)
+		return;
+	}
+    RightHandAnimInstance->Grip = Rate;
+
+	if (RightHandAnimInstance->Grip > 0.5f)
+	{
+		if (!CanTryGrabRight)
 		{
-			if (!CanTryGrabRight)
-			{
-				return;
-			}
-			CanTryGrabRight = false;
-			if (AttachedActorRightHand == nullptr)
-			{
-				AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
-				if (AttachedActorRightHand != nullptr)
-				{
-					CheckAndCallPickUpViaInterface(AttachedActorRightHand, HandMeshRight, "None");
-					if (AttachedActorLeftHand == AttachedActorRightHand)
-					{
-						AttachedActorLeftHand = nullptr;
-					}
-				}
-			}
+			return;
 		}
-		else
+		CanTryGrabRight = false;
+		if (AttachedActorRightHand != nullptr)
 		{
-			if (AttachedActorRightHand != nullptr)
-			{
-				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-				if (Interface)
-				{
-					Interface->Drop();
-					AttachedActorRightHand = nullptr;
-				}	
-			}
-			CanTryGrabRight = true;
+			return;
+		}
+		AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
+		if (AttachedActorRightHand == nullptr)
+		{
+			return;
+		}
+		CheckAndCallPickUpViaInterface(AttachedActorRightHand, HandMeshRight, "None");
+		if (AttachedActorRightHand == AttachedActorLeftHand)
+		{
+			AttachedActorLeftHand = nullptr;
+		}
+	}
+	else
+	{
+		CanTryGrabRight = true;
+
+		if (AttachedActorRightHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+		if (Interface)
+		{
+			Interface->Drop();
+			AttachedActorRightHand = nullptr;
 		}
 	}
 }
 
 void AVRCharacter::TriggerLeft(float Rate)
 {
-	LeftHandAnimInstance->Trigger = Rate;
-
-	if (IsValid(LeftHandAnimInstance))
+	if (!IsValid(LeftHandAnimInstance))
 	{
-		LeftHandAnimInstance->Trigger = Rate;
-		if (LeftHandAnimInstance->Trigger > 0.5f)
-		{
-			if (!CanTryTriggerLeft)
-			{
-				return;
-			}
-			CanTryTriggerLeft = false;
-			if (AttachedActorLeftHand != nullptr)
-			{
-				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-				if (Interface)
-				{
-					Interface->Fire();
-					CanTryTriggerLeft = false;
-					return;
-				}
-				
-			}
-			
-		}
-		CanTryTriggerLeft = true;
+		return;
 	}
+    LeftHandAnimInstance->Trigger = Rate;
+
+	if (LeftHandAnimInstance->Trigger > 0.5f)
+	{
+		if (!CanTryTriggerLeft)
+		{
+			return;
+		}
+		CanTryTriggerLeft = false;
+		if (AttachedActorLeftHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+		if (Interface)
+		{
+			Interface->Fire();
+			CanTryTriggerLeft = false;
+			return;
+		}
+	}
+	CanTryTriggerLeft = true;
 }
 
 void AVRCharacter::TriggerRight(float Rate)
 {
+	if (!IsValid(RightHandAnimInstance))
+	{
+		return;
+	}
 	RightHandAnimInstance->Trigger = Rate;
 
-	if (IsValid(RightHandAnimInstance))
+	if (RightHandAnimInstance->Trigger > 0.5f)
 	{
-		RightHandAnimInstance->Trigger = Rate;
-		if (RightHandAnimInstance->Trigger > 0.5f)
+		if (!CanTryTriggerRight)
 		{
-			if (!CanTryTriggerRight)
-			{
-				return;
-			}		
-			if (AttachedActorRightHand != nullptr)
-			{
-				IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-				if (Interface)
-				{
-					Interface->Fire();
-					CanTryTriggerRight = false;
-					return;
-				}
-				
-			}
-
+			return;
 		}
-		CanTryTriggerRight = true;
+		CanTryTriggerRight = false;
+		if (AttachedActorRightHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+		if (Interface)
+		{
+			Interface->Fire();
+			CanTryTriggerRight = false;
+			return;
+		}
 	}
+	CanTryTriggerRight = true;
 }
 
 void AVRCharacter::MoveForward(float Value)
@@ -235,26 +245,17 @@ void AVRCharacter::CharacterRotation(float Rate)
 	{
 		CanCharacterRotation = UKismetMathLibrary::InRange_FloatFloat(Rate, -0.3f, 0.3f, true, true);
 	}
+
 	if (Rate > MinRateForCharacterRotation && CanCharacterRotation)
 	{
 		AddControllerYawInput(30);
 		CanCharacterRotation = false;
 	}
-	else if(Rate < (-1)*MinRateForCharacterRotation && CanCharacterRotation)
+	else if(Rate < (-1) * MinRateForCharacterRotation && CanCharacterRotation)
 	{
 		AddControllerYawInput(-30);
 		CanCharacterRotation = false;
 	}
-}
-
-float AVRCharacter::GetLeftGripValue()
-{
-	return LeftHandAnimInstance->Grip;
-}
-
-float AVRCharacter::GetRightGripValue()
-{
-	return RightHandAnimInstance->Grip;
 }
 
 void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
@@ -264,6 +265,7 @@ void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
 void AVRCharacter::Drop()
 {
 }
+
 
 void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName)
 {
@@ -280,19 +282,19 @@ AActor* AVRCharacter::GetGrabItemNearMotionController(UMotionControllerComponent
 	FVector LocalGrabPosition;
 	if(MotionController == MotionControllerLeft)
 	{
-		LocalGrabPosition = MotionControllerLeft->GetRightVector() * 5.0f + MotionController->GetComponentLocation();
+		LocalGrabPosition = MotionControllerLeft->GetRightVector() * 4.0f + MotionController->GetComponentLocation();
 	}
 	else
 	{
-		LocalGrabPosition = MotionControllerRight->GetRightVector() * (-5.0f) + MotionController->GetComponentLocation();
+		LocalGrabPosition = MotionControllerRight->GetRightVector() * (-4.0f) + MotionController->GetComponentLocation();
 	}
 	TArray<FHitResult> OutActors;
 	FCollisionShape MySphere = FCollisionShape::MakeSphere(5.0f);
 	FCollisionQueryParams Params("GrabSphere", false, this);
-	if (GetWorld()->SweepMultiByObjectType(OutActors, LocalGrabPosition, LocalGrabPosition, FQuat::Identity, ECC_WorldDynamic, MySphere, Params))
+	if (GetWorld()->SweepMultiByObjectType(OutActors, LocalGrabPosition, LocalGrabPosition, FQuat::Identity, ECC_WorldDynamic, MySphere, Params))// do sphere trace for grab object
 	{
 		float LocalNearestActorDistance = 1000000;
-		for (FHitResult CurrentActorResult : OutActors)
+		for (FHitResult &CurrentActorResult : OutActors)
 		{
 			IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(CurrentActorResult.GetActor());
 			if (Interface)
@@ -320,7 +322,7 @@ void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalIm
 	{
 		return;
 	}
-	Health = Health - 10;
+	Health -= 10;
 
 	if (Health <= 0)
 	{

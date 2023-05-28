@@ -13,6 +13,7 @@ UCLASS()
 class VRTESTPROJECT_API ABigTank : public AEnemyRhombus
 {
 	GENERATED_BODY()
+
 public:
 	ABigTank();
 
@@ -20,6 +21,6 @@ public:
 
 	void Fire() override;
 
-	//UFUNCTION()
+protected:
 	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit) override;
 };

@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -18,38 +17,47 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Root")
 	USceneComponent* Root;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh2;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh3;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh4;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh5;
 
+private:
 
+    UPROPERTY()
+	FName ParameterOnMaterial = "ParamEmissive";
 
 	UPROPERTY()
-	FName ParameterOnMaterial{ "ParamEmissive" };
-
-	UPROPERTY()
-	float ParameterValue{ 0 };
+	float ParameterValue = 0;
 
 	UPROPERTY()
 	FTimerHandle FTimerHandleColorChangeToCalm;
 
+
+protected:
+
 	UFUNCTION()
 	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
+public:
+
+	UFUNCTION()
+	FName GetParameterOnMaterial();
+
+	UFUNCTION()
+	float GetParameterValue();
+
 	UFUNCTION()
 	void ColorChangeToCalm();
-
-	virtual void Tick(float DeltaTime) override;
 
 };

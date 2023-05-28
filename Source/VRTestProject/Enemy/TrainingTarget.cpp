@@ -5,7 +5,9 @@
 
 ATrainingTarget::ATrainingTarget() : Super()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
+
+	//init components
 	Root = CreateDefaultSubobject<USceneComponent>("Root");
 	Root->SetupAttachment(RootComponent);
 	StaticMesh1 = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh1");
@@ -24,32 +26,40 @@ ATrainingTarget::ATrainingTarget() : Super()
 
 void ATrainingTarget::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
-	StaticMesh1->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-	StaticMesh3->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-	StaticMesh5->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-
 	++ParameterValue;
 
-	StaticMesh2->SetScalarParameterValueOnMaterials(ParameterOnMaterial, ParameterValue);
-	StaticMesh4->SetScalarParameterValueOnMaterials(ParameterOnMaterial, ParameterValue);
+	StaticMesh1->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0); //change color to black
+	StaticMesh3->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0);
+	StaticMesh5->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0);
+
+	StaticMesh2->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), ParameterValue); //change color to red
+	StaticMesh4->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), ParameterValue);
 
 	GetWorldTimerManager().SetTimer(FTimerHandleColorChangeToCalm, this, &ATrainingTarget::ColorChangeToCalm, 1, false);
 }
 
 void ATrainingTarget::ColorChangeToCalm()
 {
-	StaticMesh2->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-	StaticMesh4->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-
-	StaticMesh1->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 1);
-	StaticMesh3->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 1);
-	StaticMesh5->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 1);
-
 	ParameterValue = 0;
 
+	StaticMesh1->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 1); //change color to white
+	StaticMesh3->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 1);
+	StaticMesh5->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 1);
+
+	StaticMesh2->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0); //change color to black
+	StaticMesh4->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0);
+
+	
+
 }
 
-void ATrainingTarget::Tick(float DeltaTime)
+FName ATrainingTarget::GetParameterOnMaterial()
 {
-	Super::Tick(DeltaTime);
+	return ParameterOnMaterial;
 }
+
+float ATrainingTarget::GetParameterValue()
+{
+	return ParameterValue;
+}
+

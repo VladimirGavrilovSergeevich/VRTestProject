@@ -20,7 +20,7 @@ class VRTESTPROJECT_API AVRCharacter : public ACharacter, public IInteractionWit
 public:
 	AVRCharacter();
 
-	    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	    UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		UCameraComponent* VRCamera;
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
@@ -29,21 +29,19 @@ public:
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
 		USkeletalMeshComponent* HandMeshLeft;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
 		UMotionControllerComponent* MotionControllerRight;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hand")
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
 		UMotionControllerComponent* MotionControllerLeft;
-
-		UPROPERTY()
-		UHandAnimInstance* LeftHandAnimInstance;
-
-		UPROPERTY()
-		UHandAnimInstance* RightHandAnimInstance;
+		
 private:
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Hand")
-	USceneComponent* Center;
+	UPROPERTY()
+	UHandAnimInstance* LeftHandAnimInstance;
+
+	UPROPERTY()
+	UHandAnimInstance* RightHandAnimInstance;
 
 	UPROPERTY()
 	bool CanCharacterRotation;
@@ -70,8 +68,7 @@ private:
 	AActor* AttachedActorRightHand;
 
 	UPROPERTY()
-		float Health{100};
-
+		float Health;
 
 protected:
 	virtual void BeginPlay() override;
@@ -80,33 +77,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION(BlueprintCallable, Category = "Hand")
-	void GripLeft(float Rate);
-
-	UFUNCTION(BlueprintCallable, Category = "Hand")
-	void GripRight(float Rate);
-
-	UFUNCTION(BlueprintCallable, Category = "Hand")
-	void TriggerLeft(float Rate);
-
-	UFUNCTION(BlueprintCallable, Category = "Hand")
-	void TriggerRight(float Rate);
-
-	UFUNCTION(BlueprintCallable, Category = "Hand")
-	void MoveForward(float Val);
-
-	UFUNCTION(BlueprintCallable, Category = "Hand")
-	void MoveRight(float Val);
-
-	UFUNCTION(BlueprintCallable, Category = "Hand")
-	void CharacterRotation(float Rate);
-
-	UFUNCTION(Category = "Hand")
-	float GetLeftGripValue();
-
-	UFUNCTION(Category = "Hand")
-	float GetRightGripValue();
 
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
 
@@ -122,5 +92,28 @@ public:
 
 	UFUNCTION()
 		void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
+private:
+
+	UFUNCTION(Category = "Hand")
+	void GripLeft(float Rate);
+
+	UFUNCTION(Category = "Hand")
+	void GripRight(float Rate);
+
+	UFUNCTION(Category = "Hand")
+	void TriggerLeft(float Rate);
+
+	UFUNCTION(Category = "Hand")
+	void TriggerRight(float Rate);
+
+	UFUNCTION(Category = "Move")
+	void MoveForward(float Val);
+
+	UFUNCTION(Category = "Move")
+	void MoveRight(float Val);
+
+	UFUNCTION(Category = "Move")
+	void CharacterRotation(float Rate);
 	
 };

@@ -7,8 +7,8 @@
 
 AEnemyRhombus::AEnemyRhombus():Super()
 {
+	//init components
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
 	StaticMesh6 = CreateDefaultSubobject<UStaticMeshComponent>("Canon1");
 	StaticMesh6->SetupAttachment(Root);
 	StaticMesh7 = CreateDefaultSubobject<UStaticMeshComponent>("Canon2");
@@ -22,7 +22,6 @@ AEnemyRhombus::AEnemyRhombus():Super()
 	SceneComponent1->SetupAttachment(Root);
 	SceneComponent2 = CreateDefaultSubobject<USceneComponent>("MuzzleShootingPoint2");
 	SceneComponent2->SetupAttachment(Root);
-	CharacterRef = nullptr;
 }
 
 void AEnemyRhombus::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
@@ -33,8 +32,8 @@ void AEnemyRhombus::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalI
 		return;
 	}
 	FireOn = true;
-	StaticMesh8->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 1);
-	StaticMesh9->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 1);
+	StaticMesh8->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 1); //change color to red
+	StaticMesh9->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 1);
 
 	GetWorldTimerManager().SetTimer(FTimerHandleFire, this, &AEnemyRhombus::Fire, 1, true);
 	GetWorldTimerManager().SetTimer(FTimerHandleStopFire, this, &AEnemyRhombus::StopFire, 5, false);
@@ -42,23 +41,19 @@ void AEnemyRhombus::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalI
 }
 
 
-void AEnemyRhombus::ColorChangeToCalmMuzzle()
-{
-	StaticMesh8->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-	StaticMesh9->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-}
-
 void AEnemyRhombus::Fire()
 {
 	if (IsValid(CharacterRef))
 	{	
-	FRotator RotationStartRhombus(0,UKismetMathLibrary::FindLookAtRotation(SceneComponent1->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw,0);
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<AEnemyBullet>(BP_EnemyBullet, SceneComponent1->GetComponentLocation(), RotationStartRhombus, SpawnInfo);
-	RotationStartRhombus = FRotator(0,UKismetMathLibrary::FindLookAtRotation(SceneComponent2->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw,0);
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	GetWorld()->SpawnActor<AEnemyBullet>(BP_EnemyBullet, SceneComponent2->GetComponentLocation(), RotationStartRhombus, SpawnInfo);
+
+	//shot 1st gun
+	FRotator RotationStartBullet(0, UKismetMathLibrary::FindLookAtRotation(SceneComponent1->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw, 0);
+	GetWorld()->SpawnActor<AEnemyBullet>(BP_EnemyBullet, SceneComponent1->GetComponentLocation(), RotationStartBullet, SpawnInfo);
+	//shot 2st gun
+	RotationStartBullet = FRotator(0,UKismetMathLibrary::FindLookAtRotation(SceneComponent2->GetComponentLocation(), CharacterRef->GetActorLocation()).Yaw,0);
+	GetWorld()->SpawnActor<AEnemyBullet>(BP_EnemyBullet, SceneComponent2->GetComponentLocation(), RotationStartBullet, SpawnInfo);
 	}
 }
 
@@ -66,22 +61,22 @@ void AEnemyRhombus::StopFire()
 {
 	GetWorldTimerManager().ClearTimer(FTimerHandleFire);
 	GetWorldTimerManager().ClearTimer(FTimerHandleStopFire);
+
 	FireOn = false;
-	StaticMesh8->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
-	StaticMesh9->SetScalarParameterValueOnMaterials(ParameterOnMaterial, 0);
+
+	StaticMesh8->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0); //change color to black
+	StaticMesh9->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0);
 }
 
 void AEnemyRhombus::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
-	UKismetSystemLibrary::PrintString(this, "valid");
 	if (IsValid(CharacterRef))
 	{
-		AddActorLocalOffset(FVector(0, 0, (cos(GetGameTimeSinceCreation()) * 50 * DeltaTime)));
+		AddActorLocalOffset(FVector(0, 0, (cos(GetGameTimeSinceCreation()) * 50 * DeltaTime))); //up and down motion actor
+
+		//TurnToPlayer
 		FRotator RotationStartRhombus(0,UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CharacterRef->GetActorLocation()).Yaw,0);
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SetActorRotation(RotationStartRhombus);
+		SetActorRotation(RotationStartRhombus); // Turn to character
 	}
 }
 
@@ -89,7 +84,6 @@ void AEnemyRhombus::Tick(float DeltaTime)
 void AEnemyRhombus::BeginPlay()
 {
 	Super::BeginPlay();
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bStartWithTickEnabled = true;
+
 	CharacterRef = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 }
