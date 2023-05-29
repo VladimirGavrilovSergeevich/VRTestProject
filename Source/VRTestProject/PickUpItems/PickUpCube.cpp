@@ -5,6 +5,7 @@ APickUpCube::APickUpCube()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetSimulatePhysics(true);
 }
 
 void APickUpCube::BeginPlay()

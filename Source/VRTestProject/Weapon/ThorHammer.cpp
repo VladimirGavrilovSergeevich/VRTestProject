@@ -7,6 +7,7 @@ AThorHammer::AThorHammer()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetSimulatePhysics(true);
 
 	GunMuzzle = CreateDefaultSubobject<USceneComponent>("GunMuzzle");
 	GunMuzzle->SetupAttachment(StaticMesh);
