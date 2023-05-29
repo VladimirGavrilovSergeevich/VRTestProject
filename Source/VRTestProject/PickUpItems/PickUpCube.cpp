@@ -36,3 +36,7 @@ void APickUpCube::Fire()
 {
 }
 
+void APickUpCube::StopFire()
+{
+}
+

@@ -62,6 +62,13 @@ private:
 	bool CanTryTriggerLeft;
 
 	UPROPERTY()
+	bool CanTryStopFireRight;
+
+	UPROPERTY()
+	bool CanTryStopFireLeft;
+
+
+	UPROPERTY()
 	AActor* AttachedActorLeftHand;
 
 	UPROPERTY()
@@ -83,6 +90,8 @@ public:
 	virtual void Drop() override;
 
 	virtual void Fire() override;
+
+	virtual void StopFire() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	void CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName);
@@ -115,5 +124,8 @@ private:
 
 	UFUNCTION(Category = "Move")
 	void CharacterRotation(float Rate);
+
+	UFUNCTION()
+	void DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire);
 	
 };

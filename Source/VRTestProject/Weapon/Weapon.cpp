@@ -19,3 +19,19 @@ void AWeapon::Tick(float DeltaTime)
 
 }
 
+void AWeapon::PickUp(USceneComponent* AttachTo, FName SocketName)
+{
+}
+
+void AWeapon::Drop()
+{
+}
+
+void AWeapon::Fire()
+{
+}
+
+void AWeapon::StopFire()
+{
+}
+

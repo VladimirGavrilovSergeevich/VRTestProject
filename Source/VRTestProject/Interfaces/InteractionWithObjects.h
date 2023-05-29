@@ -30,4 +30,7 @@ public:
 
 	UFUNCTION()
 	virtual void Fire() = 0;
+
+	UFUNCTION()
+	virtual void StopFire() = 0;
 };

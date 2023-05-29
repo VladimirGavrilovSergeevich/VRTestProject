@@ -16,6 +16,10 @@ AVRCharacter::AVRCharacter() :
 	CanTryGrabRight(true),
 	CanTryTriggerRight(true),
 	CanTryTriggerLeft(true),
+	AttachedActorLeftHand(nullptr),
+	AttachedActorRightHand(nullptr),
+	CanTryStopFireRight(false),
+	CanTryStopFireLeft(false),
 	Health(100)
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -170,26 +174,7 @@ void AVRCharacter::TriggerLeft(float Rate)
 	}
     LeftHandAnimInstance->Trigger = Rate;
 
-	if (LeftHandAnimInstance->Trigger > 0.5f)
-	{
-		if (!CanTryTriggerLeft)
-		{
-			return;
-		}
-		CanTryTriggerLeft = false;
-		if (AttachedActorLeftHand == nullptr)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-		if (Interface)
-		{
-			Interface->Fire();
-			CanTryTriggerLeft = false;
-			return;
-		}
-	}
-	CanTryTriggerLeft = true;
+	DoFireAndStopFire(LeftHandAnimInstance->Trigger, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft);
 }
 
 void AVRCharacter::TriggerRight(float Rate)
@@ -199,27 +184,7 @@ void AVRCharacter::TriggerRight(float Rate)
 		return;
 	}
 	RightHandAnimInstance->Trigger = Rate;
-
-	if (RightHandAnimInstance->Trigger > 0.5f)
-	{
-		if (!CanTryTriggerRight)
-		{
-			return;
-		}
-		CanTryTriggerRight = false;
-		if (AttachedActorRightHand == nullptr)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-		if (Interface)
-		{
-			Interface->Fire();
-			CanTryTriggerRight = false;
-			return;
-		}
-	}
-	CanTryTriggerRight = true;
+	DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight);
 }
 
 void AVRCharacter::MoveForward(float Value)
@@ -254,6 +219,44 @@ void AVRCharacter::CharacterRotation(float Rate)
 	{
 		AddControllerYawInput(-30);
 		CanCharacterRotation = false;
+	}
+}
+
+void AVRCharacter::DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire)
+{
+	if (TriggerValue > 0.5f)
+	{
+		if (!CanTryTrigger)
+		{
+			return;
+		}
+		CanTryTrigger = false;
+		if (AttachedActorHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorHand);
+		if (Interface)
+		{
+			Interface->Fire();
+			CanTryTrigger = false;
+			CanTryStopFire = true;
+			return;
+		}
+	}
+	else
+	{
+		CanTryTrigger = true;
+		if (!CanTryStopFire || AttachedActorHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorHand);
+		if (Interface)
+		{
+			Interface->StopFire();
+			CanTryStopFire = false;
+		}
 	}
 }
 
@@ -315,6 +318,10 @@ void AVRCharacter::Fire()
 {
 }
 
+void AVRCharacter::StopFire()
+{
+
+}
 void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
 	if(!OtherActor->GetClass()->IsChildOf(AEnemyBullet::StaticClass()))

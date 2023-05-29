@@ -36,4 +36,7 @@ public:
 
 	UFUNCTION()
 	virtual void Fire() override;
+
+	UFUNCTION()
+	virtual void StopFire() override;
 };

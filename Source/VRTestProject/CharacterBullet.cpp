@@ -2,10 +2,3 @@
 
 
 #include "CharacterBullet.h"
-
-//ACharacterBullet::ACharacterBullet()
-//{
-	//PrimaryActorTick.bCanEverTick = false;
-	//StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	//ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
-//}
