@@ -93,6 +93,8 @@ public:
 
 	virtual void StopFire() override;
 
+	float GetHealth() const;
+
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	void CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName);
 

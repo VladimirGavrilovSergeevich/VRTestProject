@@ -18,7 +18,7 @@ AVRCharacter::AVRCharacter() :
 	CanTryTriggerLeft(true),
 	AttachedActorLeftHand(nullptr),
 	AttachedActorRightHand(nullptr),
-	CanTryStopFireRight(false),
+	CanTryStopFireRight(false),   
 	CanTryStopFireLeft(false),
 	Health(100)
 {
@@ -321,6 +321,10 @@ void AVRCharacter::Fire()
 void AVRCharacter::StopFire()
 {
 
+}
+float AVRCharacter::GetHealth() const
+{
+	return Health;
 }
 void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {
