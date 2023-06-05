@@ -15,7 +15,7 @@ class VRTESTPROJECT_API UHealthBar : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable)
-		float GetHealth();
+		float GetHealthPercent();
 protected:
 	
 };

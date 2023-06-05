@@ -6,9 +6,4 @@
 void AVRTestProjectHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	UHealthBar* CurrentHealthBarWidget = CreateWidget<UHealthBar>(GetWorld(), HealthBarWidget);
-	if (CurrentHealthBarWidget)
-	{
-		CurrentHealthBarWidget->AddToViewport(); 
-	}
 }

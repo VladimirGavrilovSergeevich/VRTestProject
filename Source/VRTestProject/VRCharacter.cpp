@@ -5,6 +5,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Enemy/EnemyBullet.h"
+#include "VRTestProjectGameInstance.h"
+#include "Managers/SpawnManager.h"
 
 
 
@@ -18,11 +20,14 @@ AVRCharacter::AVRCharacter() :
 	CanTryTriggerLeft(true),
 	AttachedActorLeftHand(nullptr),
 	AttachedActorRightHand(nullptr),
-	CanTryStopFireRight(false),   
+	CanTryStopFireRight(false),
 	CanTryStopFireLeft(false),
-	Health(100)
+	MaxHealth(100),
+	Health(MaxHealth),
+	RightHandPointingAtWidget(false),
+	LeftHandPointingAtWidget(false)
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	//init and attach components
 	VRCamera = CreateDefaultSubobject<UCameraComponent>("VRCamera");
@@ -40,7 +45,69 @@ AVRCharacter::AVRCharacter() :
 	HandMeshLeft = CreateDefaultSubobject<USkeletalMeshComponent>("HandMeshLeft");
 	HandMeshLeft->SetupAttachment(MotionControllerLeft);
 
+	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HPBar");
+	WidgetComponent->SetupAttachment(VRCamera);
+
+	WidgetInteractionComponentRight = CreateDefaultSubobject<UWidgetInteractionComponent>("WidgetInteractionRight");
+	WidgetInteractionComponentRight->SetupAttachment(MotionControllerRight);
+
+	WidgetInteractionComponentLeft = CreateDefaultSubobject<UWidgetInteractionComponent>("WidgetInteractionLeft");
+	WidgetInteractionComponentLeft->SetupAttachment(MotionControllerLeft);
+
+	SplineComponentRight = CreateDefaultSubobject<USplineComponent>("SplineComponentRight");
+	SplineComponentRight->SetupAttachment(WidgetInteractionComponentRight);
+
+	SplineComponentLeft = CreateDefaultSubobject<USplineComponent>("SplineComponentLeft");
+	SplineComponentLeft->SetupAttachment(WidgetInteractionComponentLeft);
+
+	SplineMeshComponentRight = CreateDefaultSubobject<USplineMeshComponent>("SplineMeshComponentRight");
+	SplineMeshComponentRight->SetupAttachment(SplineComponentRight);
+
+	SplineMeshComponentLeft = CreateDefaultSubobject<USplineMeshComponent>("SplineMeshComponentLeft");
+	SplineMeshComponentLeft->SetupAttachment(SplineComponentLeft);
+
 	OnActorHit.AddDynamic(this, &AVRCharacter::OnHit);
+	//if (GetWorld())
+	//{
+
+	
+	//auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
+	//if (CurrentGameInstance)
+	//{
+	//	FActorSpawnParameters SpawnInfo;
+//		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+//		switch (CurrentGameInstance->LastWeaponInLeftHand.GetValue())
+//		{
+	//	case::LastWeaponInHand::None:
+				///
+	//			break;
+
+	//	case::LastWeaponInHand::Pistol:
+			//FRotator RotationStartBullet = GunMuzzle->GetComponentRotation();
+			
+
+			//GetWorld()->SpawnActor<APistol>(BP_Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
+		//	GetWorld()->SpawnActor<APistol>(BP_Pistol, FVector(0,0,300), HandMeshLeft->GetComponentRotation(), SpawnInfo);
+		//	AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
+		//	if (AttachedActorLeftHand == nullptr)
+		//	{
+		//		return;
+		//	}
+		//	CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+
+	//		break;
+
+		//case::LastWeaponInHand::Uzi:
+			///
+		//	break;
+
+//		default:
+//			break;
+//		}
+	//}
+
+
+	//}
 }
 
 void AVRCharacter::BeginPlay()
@@ -49,12 +116,83 @@ void AVRCharacter::BeginPlay()
 	//init Variable after Cast
 	LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
 	RightHandAnimInstance = Cast<UHandAnimInstance>(HandMeshRight->GetAnimInstance());
+
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+//		CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+		auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
+		if (CurrentGameInstance)
+		{
+			auto GameManagerRef = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
+			if (!GameManagerRef)
+			{
+				return;
+			}
+
+			switch (CurrentGameInstance->LastWeaponInLeftHand.GetValue())
+				
+						{
+						case::LastWeaponInHand::None:
+							//CurrentGameInstance->WasTransitionBetweenLevels = false;
+								break;
+
+						case::LastWeaponInHand::Pistol:
+							
+							CurrentGameInstance->WasTransitionBetweenLevels = true;
+							
+							AttachedActorLeftHand = GameManagerRef->SpawnWeapon(Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation());
+							//AttachedActorLeftHand = GetWorld()->SpawnActor<APistol>(BP_Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
+
+							GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 1, true);
+							//FRotator RotationStartBullet = GunMuzzle->GetComponentRotation();
+
+
+							//GetWorld()->SpawnActor<APistol>(BP_Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
+						//	GetWorld()->SpawnActor<APistol>(BP_Pistol, FVector(0,0,300), HandMeshLeft->GetComponentRotation(), SpawnInfo);
+							//AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
+							if (AttachedActorLeftHand == nullptr)
+							{
+								return;
+							}
+							CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+
+							break;
+
+						case::LastWeaponInHand::Uzi:
+							CurrentGameInstance->WasTransitionBetweenLevels = true;
+							AttachedActorLeftHand = GameManagerRef->SpawnWeapon(Uzi, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation());
+							//AttachedActorLeftHand = GetWorld()->SpawnActor<AUzi>(BP_Uzi, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
+
+							GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 1, true);
+
+							if (AttachedActorLeftHand == nullptr)
+							{
+								return;
+							}
+							CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+							break;
+
+						default:
+							CurrentGameInstance->WasTransitionBetweenLevels = false;
+							break;
+						}
+			
+		
+		}
+		
 }
 
 void AVRCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//SplineConstruction for AllHands
+	SplineConstructionToWidget(WidgetInteractionComponentRight, SplineComponentRight, RightHandPointingAtWidget);
+	SplineConstructionToWidget(WidgetInteractionComponentLeft, SplineComponentLeft, LeftHandPointingAtWidget);
+
+	UpdateSplineMesh(SplineComponentRight, SplineMeshComponentRight);
+	UpdateSplineMesh(SplineComponentLeft, SplineMeshComponentLeft);
 }
 
 void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -69,6 +207,12 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("MoveForward", this, &AVRCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AVRCharacter::MoveRight);
 	PlayerInputComponent->BindAxis("CharacterRotation", this, &AVRCharacter::CharacterRotation);
+
+	//BindAction for WidgetInteraction
+	PlayerInputComponent->BindAction("TriggerRightAction", IE_Pressed, this, &AVRCharacter::TriggerRightActionPressed);
+	PlayerInputComponent->BindAction("TriggerLeftAction", IE_Pressed, this, &AVRCharacter::TriggerLeftActionPressed);
+	PlayerInputComponent->BindAction("TriggerRightAction", IE_Released,this, &AVRCharacter::TriggerRightActionReleased);
+	PlayerInputComponent->BindAction("TriggerLeftAction", IE_Released, this, &AVRCharacter::TriggerLeftActionReleased);
 }
 
 void AVRCharacter::GripLeft(float Rate)
@@ -107,6 +251,11 @@ void AVRCharacter::GripLeft(float Rate)
 		CanTryGrabLeft = true;
 
 		if (AttachedActorLeftHand == nullptr)
+		{
+			return;
+		}
+		auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
+		if (CurrentGameInstance->WasTransitionBetweenLevels)
 		{
 			return;
 		}
@@ -173,8 +322,7 @@ void AVRCharacter::TriggerLeft(float Rate)
 		return;
 	}
     LeftHandAnimInstance->Trigger = Rate;
-
-	DoFireAndStopFire(LeftHandAnimInstance->Trigger, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft);
+	DoFireAndStopFire(LeftHandAnimInstance->Trigger, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft, LeftHandPointingAtWidget);
 }
 
 void AVRCharacter::TriggerRight(float Rate)
@@ -184,7 +332,8 @@ void AVRCharacter::TriggerRight(float Rate)
 		return;
 	}
 	RightHandAnimInstance->Trigger = Rate;
-	DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight);
+	DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
+	//ChooseToPressButtonOrShoot();
 }
 
 void AVRCharacter::MoveForward(float Value)
@@ -201,6 +350,26 @@ void AVRCharacter::MoveRight(float Value)
 	{
 		AddMovementInput(VRCamera->GetRightVector(), Value);
 	}
+}
+
+void AVRCharacter::TriggerRightActionPressed()
+{
+	WidgetInteractionComponentRight->PressPointerKey(EKeys::LeftMouseButton.GetFName());
+}
+
+void AVRCharacter::TriggerRightActionReleased()
+{
+	WidgetInteractionComponentRight->ReleasePointerKey(EKeys::LeftMouseButton.GetFName());
+}
+
+void AVRCharacter::TriggerLeftActionPressed()
+{
+	WidgetInteractionComponentLeft->PressPointerKey(EKeys::LeftMouseButton.GetFName());
+}
+
+void AVRCharacter::TriggerLeftActionReleased()
+{
+	WidgetInteractionComponentLeft->ReleasePointerKey(EKeys::LeftMouseButton.GetFName());
 }
 
 void AVRCharacter::CharacterRotation(float Rate)
@@ -222,8 +391,12 @@ void AVRCharacter::CharacterRotation(float Rate)
 	}
 }
 
-void AVRCharacter::DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire)
+void AVRCharacter::DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire, bool& HandPointingAtWidget)
 {
+	if (HandPointingAtWidget)
+	{
+		return;
+	}
 	if (TriggerValue > 0.5f)
 	{
 		if (!CanTryTrigger)
@@ -257,6 +430,36 @@ void AVRCharacter::DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, A
 			Interface->StopFire();
 			CanTryStopFire = false;
 		}
+	}
+}
+
+void AVRCharacter::DoPressButtonOnWidget(float& TriggerValue, bool& CanTryTrigger)
+{
+	if (TriggerValue > 0.5f)
+	{
+		if (!CanTryTrigger)
+		{
+			return;
+		}
+		WidgetInteractionComponentRight->PressPointerKey(EKeys::LeftMouseButton);
+	}
+	else
+	{
+		CanTryTrigger = true;
+		WidgetInteractionComponentRight->PressPointerKey(EKeys::LeftMouseButton);
+	}
+
+}
+
+void AVRCharacter::ChooseToPressButtonOrShoot()
+{
+	if (RightHandPointingAtWidget)
+	{
+	//	
+	}
+	else
+	{
+		DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
 	}
 }
 
@@ -325,6 +528,53 @@ void AVRCharacter::StopFire()
 float AVRCharacter::GetHealth() const
 {
 	return Health;
+}
+float AVRCharacter::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+AActor* AVRCharacter::GetAttachedActorLeftHand()
+{
+	return AttachedActorLeftHand;
+}
+AActor* AVRCharacter::GetAttachedActorRightHand()
+{
+	return AttachedActorRightHand;
+}
+void AVRCharacter::SetWasTransitionBetweenLevels()
+{
+	auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
+	if (CurrentGameInstance)
+	{
+		CurrentGameInstance->WasTransitionBetweenLevels = false;
+	}
+}
+void AVRCharacter::UpdateSplineMesh(USplineComponent* SplineComponent, USplineMeshComponent* SplineMeshComponent)
+{
+	const FVector StartPoint = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::Local);
+	const FVector StartTangent = SplineComponent->GetTangentAtSplinePoint(0, ESplineCoordinateSpace::Local);
+	const FVector EndPoint = SplineComponent->GetLocationAtSplinePoint(1, ESplineCoordinateSpace::Local);
+	const FVector EndTangent = SplineComponent->GetTangentAtSplinePoint(1, ESplineCoordinateSpace::Local);
+
+	SplineMeshComponent->SetStartAndEnd(StartPoint, StartTangent, EndPoint, EndTangent);
+}
+void AVRCharacter::SplineConstructionToWidget(UWidgetInteractionComponent* WidgetInteractionComponent, USplineComponent* SplineComponent, bool& HandPointingAtWidget)
+{
+	FHitResult HitResult = WidgetInteractionComponent->GetLastHitResult();
+	if (HitResult.Location.X != 0)
+	{
+		SplineComponent->SetLocationAtSplinePoint(1, HitResult.Location, ESplineCoordinateSpace::World);
+
+		HandPointingAtWidget = true;
+	}
+	else
+	{
+		const FVector ZeroPointForSplineComponent = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
+		SplineComponent->SetLocationAtSplinePoint(1, ZeroPointForSplineComponent, ESplineCoordinateSpace::World);
+
+		HandPointingAtWidget = false;
+	}
+
 }
 void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
 {

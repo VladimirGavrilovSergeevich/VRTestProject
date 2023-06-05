@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Components/Button.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "MapsSelection.generated.h"
@@ -14,4 +15,13 @@ class VRTESTPROJECT_API UMapsSelection : public UUserWidget
 {
 	GENERATED_BODY()
 	
+protected:
+	UPROPERTY(meta = (BindWidget))
+	UButton* LevelChangeButton;
+	
+	virtual void NativeOnInitialized() override;
+private:
+
+	UFUNCTION()
+	void LevelChange();
 };

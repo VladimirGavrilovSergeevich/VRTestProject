@@ -1,15 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-
-
+#include "Components/SplineMeshComponent.h"
+#include "Components/SplineComponent.h"
+#include "Components/WidgetInteractionComponent.h"
+#include "Components/WidgetComponent.h"
 #include "HandAnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MotionControllerComponent.h"
 #include "Interfaces/InteractionWithObjects.h"
-
+#include "Weapon/Pistol.h"
+#include "Weapon/Uzi.h"
 #include "VRCharacter.generated.h"
 
 UCLASS()
@@ -34,6 +37,33 @@ public:
 
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
 		UMotionControllerComponent* MotionControllerLeft;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		UWidgetComponent* WidgetComponent;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		UWidgetInteractionComponent* WidgetInteractionComponentRight;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		UWidgetInteractionComponent* WidgetInteractionComponentLeft;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		USplineComponent* SplineComponentRight;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		USplineComponent* SplineComponentLeft;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		USplineMeshComponent* SplineMeshComponentRight;
+
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+		USplineMeshComponent* SplineMeshComponentLeft;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<APistol> BP_Pistol;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<AUzi> BP_Uzi;
 		
 private:
 	
@@ -75,7 +105,21 @@ private:
 	AActor* AttachedActorRightHand;
 
 	UPROPERTY()
-		float Health;
+	float MaxHealth;
+
+	UPROPERTY()
+	float Health;
+
+	UPROPERTY()
+	bool RightHandPointingAtWidget;
+
+	UPROPERTY()
+	bool LeftHandPointingAtWidget;
+
+	UPROPERTY()
+	FTimerHandle FTimerHandleWasTransitionBetweenLevels;
+
+	
 
 protected:
 	virtual void BeginPlay() override;
@@ -94,6 +138,23 @@ public:
 	virtual void StopFire() override;
 
 	float GetHealth() const;
+
+	float GetMaxHealth() const;
+
+	UFUNCTION()
+	AActor* GetAttachedActorLeftHand();
+
+	UFUNCTION()
+	AActor* GetAttachedActorRightHand();
+
+	UFUNCTION()
+	void SetWasTransitionBetweenLevels();
+
+	UFUNCTION()
+	void UpdateSplineMesh(USplineComponent* SplineComponent, USplineMeshComponent* SplineMeshComponent);
+
+	UFUNCTION()
+	void SplineConstructionToWidget(UWidgetInteractionComponent* WidgetInteractionComponent, USplineComponent* SplineComponent, bool &HandPointingAtWidget);
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	void CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName);
@@ -124,10 +185,30 @@ private:
 	UFUNCTION(Category = "Move")
 	void MoveRight(float Val);
 
+	UFUNCTION(Category = "WidgetInteraction")
+	void TriggerRightActionPressed();
+
+	UFUNCTION(Category = "WidgetInteraction")
+	void TriggerRightActionReleased();
+
+	UFUNCTION(Category = "WidgetInteraction")
+	void TriggerLeftActionPressed();
+
+	UFUNCTION(Category = "WidgetInteraction")
+	void TriggerLeftActionReleased();
+
 	UFUNCTION(Category = "Move")
 	void CharacterRotation(float Rate);
 
 	UFUNCTION()
-	void DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire);
+	void DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire, bool &HandPointingAtWidget);
+
+	UFUNCTION()
+	void DoPressButtonOnWidget(float& TriggerValue , bool& CanTryTrigger);
+
+	UFUNCTION()
+	void ChooseToPressButtonOrShoot();
+
+
 	
 };
