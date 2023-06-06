@@ -20,42 +20,9 @@ void UMapsSelection::NativeOnInitialized()
 
 void UMapsSelection::LevelChange()
 {
-	auto SpawnManager = Cast<ASpawnManager>(GetWorld()->GetGameInstance());
-	SpawnManager->ChoiceLastWeaponInHand();
-	/*auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
-	if (CurrentGameInstance)
-	{
-	//	CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::None;
-		auto CurrentPawn = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-		if (CurrentPawn)
-		{
-			if (CurrentPawn->GetAttachedActorLeftHand())
-			{
-				if (CurrentPawn->GetAttachedActorLeftHand()->GetClass()->IsChildOf(APistol::StaticClass()))
-			{
-					CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::Pistol;
-					CurrentGameInstance->WasTransitionBetweenLevels = true;
-			}
-			    else if (CurrentPawn->GetAttachedActorLeftHand()->GetClass()->IsChildOf(AUzi::StaticClass()))
-				{
-					CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::Uzi;
-					CurrentGameInstance->WasTransitionBetweenLevels = true;
-				}
-				else
-				{
-					CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::None;
-					CurrentGameInstance->WasTransitionBetweenLevels = false;
-				}
-				
-			}
-			else
-			{
-				CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::None;
-				CurrentGameInstance->WasTransitionBetweenLevels = false;
-			}
-		}
-		
-	}*/
+	auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
+	SpawnManager->ChoiceLastWeaponInHand();//remember the weapon in hand before changing the level
+	
 	if (UGameplayStatics::GetCurrentLevelName(this) == "MainMap")
 	{
 		UGameplayStatics::OpenLevel(this, "SecondMap");

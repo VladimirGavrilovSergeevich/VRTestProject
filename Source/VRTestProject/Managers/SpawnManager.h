@@ -47,6 +47,9 @@ public:
 	UFUNCTION()
 	void ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand);
 
+	UFUNCTION()
+	void ClearValueOfWeaponInHand();
+
 
 	virtual void Tick(float DeltaTime) override;
 

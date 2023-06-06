@@ -1,17 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "Managers/SpawnManager.h"
 
-// Sets default values
 ASpawnManager::ASpawnManager()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
-// Called when the game starts or when spawned
 void ASpawnManager::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,35 +17,41 @@ void ASpawnManager::BeginPlay()
 
 AActor* ASpawnManager::SpawnWeapon(LastWeaponInHand Weapon, FVector Location, FRotator Rotation)
 {
-
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
+	AActor* SpawnWeaponActor;
 		switch (Weapon)
 
 		{
 		case::LastWeaponInHand::None:
-
+			SpawnWeaponActor = nullptr;
 			break;
 
 	    case::LastWeaponInHand::Pistol:
-	        GetWorld()->SpawnActor<APistol>(BP_Pistol, Location, Rotation, SpawnInfo);
+			SpawnWeaponActor = GetWorld()->SpawnActor<APistol>(BP_Pistol, Location, Rotation, SpawnInfo);
 	        break;
 
 		case::LastWeaponInHand::Uzi:
-			GetWorld()->SpawnActor<AUzi>(BP_Uzi, Location, Rotation, SpawnInfo);
+			SpawnWeaponActor = GetWorld()->SpawnActor<AUzi>(BP_Uzi, Location, Rotation, SpawnInfo);
 			break;
 
 		default:
+			SpawnWeaponActor = nullptr;
 			break;
 		}
-
-	return nullptr;
+		ClearValueOfWeaponInHand();
+	return SpawnWeaponActor;
 }
 
 void ASpawnManager::ChoiceLastWeaponInHand()
 {
+	check(GetWorld());
 	CurrentPawn = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (!CurrentPawn)
+	{
+		return;
+	}	
 	if (IsValid(CurrentPawn->GetAttachedActorLeftHand()))
 	{
 		ChoiceNowForLeftOrRightHand(CurrentPawn->GetAttachedActorLeftHand(), CurrentGameInstance->LastWeaponInLeftHand);
@@ -59,10 +59,7 @@ void ASpawnManager::ChoiceLastWeaponInHand()
 	if (IsValid(CurrentPawn->GetAttachedActorRightHand()))
 	{
 		ChoiceNowForLeftOrRightHand(CurrentPawn->GetAttachedActorRightHand(), CurrentGameInstance->LastWeaponInRightHand);
-	}
-			
-			
-			
+	}		
 }
 
 void ASpawnManager::ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand)
@@ -87,9 +84,12 @@ void ASpawnManager::ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWe
 	}
 }
 
-	
+void ASpawnManager::ClearValueOfWeaponInHand()
+{
+	CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::None;
+	CurrentGameInstance->LastWeaponInRightHand = LastWeaponInHand::None;
+}
 
-		// Called every frame
 void ASpawnManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

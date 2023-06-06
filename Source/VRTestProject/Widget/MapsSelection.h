@@ -2,14 +2,12 @@
 
 #pragma once
 
+#include "VRCharacter.h"
 #include "Components/Button.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "MapsSelection.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class VRTESTPROJECT_API UMapsSelection : public UUserWidget
 {
@@ -18,8 +16,9 @@ class VRTESTPROJECT_API UMapsSelection : public UUserWidget
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* LevelChangeButton;
-	
-	virtual void NativeOnInitialized() override;
+
+    virtual void NativeOnInitialized() override;
+
 private:
 
 	UFUNCTION()
