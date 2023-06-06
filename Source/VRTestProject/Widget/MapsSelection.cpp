@@ -3,10 +3,6 @@
 
 #include "Widget/MapsSelection.h"
 #include "Kismet/GameplayStatics.h"
-#include "VRTestProjectGameInstance.h"
-#include "VRCharacter.h"
-#include "Weapon/Pistol.h"
-#include "Weapon/Uzi.h"
 #include "Managers/SpawnManager.h"
 
 void UMapsSelection::NativeOnInitialized()

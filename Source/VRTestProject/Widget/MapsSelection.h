@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "VRCharacter.h"
 #include "Components/Button.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"

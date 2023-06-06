@@ -8,8 +8,6 @@
 #include "VRTestProjectGameInstance.h"
 #include "Managers/SpawnManager.h"
 
-
-
 AVRCharacter::AVRCharacter() :
 	//init Variable
 	CanCharacterRotation(false),
@@ -25,7 +23,8 @@ AVRCharacter::AVRCharacter() :
 	MaxHealth(100),
 	Health(MaxHealth),
 	RightHandPointingAtWidget(false),
-	LeftHandPointingAtWidget(false)
+	LeftHandPointingAtWidget(false),
+	WeaponDropDelay(true)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -67,47 +66,6 @@ AVRCharacter::AVRCharacter() :
 	SplineMeshComponentLeft->SetupAttachment(SplineComponentLeft);
 
 	OnActorHit.AddDynamic(this, &AVRCharacter::OnHit);
-	//if (GetWorld())
-	//{
-
-	
-	//auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
-	//if (CurrentGameInstance)
-	//{
-	//	FActorSpawnParameters SpawnInfo;
-//		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-//		switch (CurrentGameInstance->LastWeaponInLeftHand.GetValue())
-//		{
-	//	case::LastWeaponInHand::None:
-				///
-	//			break;
-
-	//	case::LastWeaponInHand::Pistol:
-			//FRotator RotationStartBullet = GunMuzzle->GetComponentRotation();
-			
-
-			//GetWorld()->SpawnActor<APistol>(BP_Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
-		//	GetWorld()->SpawnActor<APistol>(BP_Pistol, FVector(0,0,300), HandMeshLeft->GetComponentRotation(), SpawnInfo);
-		//	AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
-		//	if (AttachedActorLeftHand == nullptr)
-		//	{
-		//		return;
-		//	}
-		//	CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-
-	//		break;
-
-		//case::LastWeaponInHand::Uzi:
-			///
-		//	break;
-
-//		default:
-//			break;
-//		}
-	//}
-
-
-	//}
 }
 
 void AVRCharacter::BeginPlay()
@@ -117,70 +75,22 @@ void AVRCharacter::BeginPlay()
 	LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
 	RightHandAnimInstance = Cast<UHandAnimInstance>(HandMeshRight->GetAnimInstance());
 
-
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-//		CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-		auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
-		if (CurrentGameInstance)
-		{
-			auto GameManagerRef = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-			if (!GameManagerRef)
-			{
-				return;
-			}
 
-			switch (CurrentGameInstance->LastWeaponInLeftHand.GetValue())
-				
-						{
-						case::LastWeaponInHand::None:
-							//CurrentGameInstance->WasTransitionBetweenLevels = false;
-								break;
-
-						case::LastWeaponInHand::Pistol:
-							
-							CurrentGameInstance->WasTransitionBetweenLevels = true;
-							
-							AttachedActorLeftHand = GameManagerRef->SpawnWeapon(Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation());
-							//AttachedActorLeftHand = GetWorld()->SpawnActor<APistol>(BP_Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
-
-							GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 1, true);
-							//FRotator RotationStartBullet = GunMuzzle->GetComponentRotation();
-
-
-							//GetWorld()->SpawnActor<APistol>(BP_Pistol, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
-						//	GetWorld()->SpawnActor<APistol>(BP_Pistol, FVector(0,0,300), HandMeshLeft->GetComponentRotation(), SpawnInfo);
-							//AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
-							if (AttachedActorLeftHand == nullptr)
-							{
-								return;
-							}
-							CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-
-							break;
-
-						case::LastWeaponInHand::Uzi:
-							CurrentGameInstance->WasTransitionBetweenLevels = true;
-							AttachedActorLeftHand = GameManagerRef->SpawnWeapon(Uzi, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation());
-							//AttachedActorLeftHand = GetWorld()->SpawnActor<AUzi>(BP_Uzi, HandMeshLeft->GetComponentLocation(), HandMeshLeft->GetComponentRotation(), SpawnInfo);
-
-							GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 1, true);
-
-							if (AttachedActorLeftHand == nullptr)
-							{
-								return;
-							}
-							CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-							break;
-
-						default:
-							CurrentGameInstance->WasTransitionBetweenLevels = false;
-							break;
-						}
-			
-		
-		}
-		
+	CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
+	if (!CurrentGameInstance)
+	{
+		return;
+	}
+	auto GameManagerRef = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
+	if (!GameManagerRef)
+	{
+		return;
+	}
+	SpawnWeaponInHand(AttachedActorLeftHand, CurrentGameInstance->LastWeaponInLeftHand, HandMeshLeft, GameManagerRef);
+	SpawnWeaponInHand(AttachedActorRightHand, CurrentGameInstance->LastWeaponInRightHand, HandMeshRight, GameManagerRef);
+	GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 0.5, true);
 }
 
 void AVRCharacter::Tick(float DeltaTime)
@@ -254,8 +164,7 @@ void AVRCharacter::GripLeft(float Rate)
 		{
 			return;
 		}
-		auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
-		if (CurrentGameInstance->WasTransitionBetweenLevels)
+		if (WeaponDropDelay)
 		{
 			return;
 		}
@@ -306,6 +215,10 @@ void AVRCharacter::GripRight(float Rate)
 		{
 			return;
 		}
+		if (WeaponDropDelay)
+		{
+			return;
+		}
 		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
 		if (Interface)
 		{
@@ -333,7 +246,6 @@ void AVRCharacter::TriggerRight(float Rate)
 	}
 	RightHandAnimInstance->Trigger = Rate;
 	DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
-	//ChooseToPressButtonOrShoot();
 }
 
 void AVRCharacter::MoveForward(float Value)
@@ -463,6 +375,17 @@ void AVRCharacter::ChooseToPressButtonOrShoot()
 	}
 }
 
+void AVRCharacter::SpawnWeaponInHand(AActor* AttachedActorInHand,TEnumAsByte<LastWeaponInHand>& LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef)
+{
+	AttachedActorInHand = GameManagerRef->SpawnWeapon(LastWeaponInHand, HandMesh->GetComponentLocation(), HandMesh->GetComponentRotation());
+
+	if (AttachedActorInHand == nullptr)
+	{
+		return;
+	}
+	CheckAndCallPickUpViaInterface(AttachedActorInHand, HandMesh, "None");
+}
+
 void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
 {
 }
@@ -472,9 +395,9 @@ void AVRCharacter::Drop()
 }
 
 
-void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName)
+void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, USceneComponent* AttachTo, FName SocketName)
 {
-	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(TestActor);
+	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorInHand);
 	if (Interface)
 	{
 		Interface->PickUp(AttachTo,SocketName);
@@ -543,11 +466,7 @@ AActor* AVRCharacter::GetAttachedActorRightHand()
 }
 void AVRCharacter::SetWasTransitionBetweenLevels()
 {
-	auto CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
-	if (CurrentGameInstance)
-	{
-		CurrentGameInstance->WasTransitionBetweenLevels = false;
-	}
+	WeaponDropDelay = false;
 }
 void AVRCharacter::UpdateSplineMesh(USplineComponent* SplineComponent, USplineMeshComponent* SplineMeshComponent)
 {

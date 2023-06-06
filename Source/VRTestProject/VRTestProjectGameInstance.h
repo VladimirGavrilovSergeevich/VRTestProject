@@ -25,9 +25,6 @@ class VRTESTPROJECT_API UVRTestProjectGameInstance : public UGameInstance
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveAttachedActor")
-	bool WasTransitionBetweenLevels = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveAttachedActor")
 	TEnumAsByte<LastWeaponInHand> LastWeaponInLeftHand = LastWeaponInHand::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveAttachedActor")

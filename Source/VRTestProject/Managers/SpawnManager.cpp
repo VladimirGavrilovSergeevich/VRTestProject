@@ -13,16 +13,17 @@ void ASpawnManager::BeginPlay()
 	check(CurrentGameInstance);
 	CurrentPawn = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	check(CurrentPawn);
+	check(GetWorld());
 }
 
-AActor* ASpawnManager::SpawnWeapon(LastWeaponInHand Weapon, FVector Location, FRotator Rotation)
+AActor* ASpawnManager::SpawnWeapon(TEnumAsByte<LastWeaponInHand> &Weapon, FVector Location, FRotator Rotation)
 {
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	AActor* SpawnWeaponActor;
-		switch (Weapon)
 
+		switch (Weapon.GetValue())
 		{
 		case::LastWeaponInHand::None:
 			SpawnWeaponActor = nullptr;
@@ -40,18 +41,14 @@ AActor* ASpawnManager::SpawnWeapon(LastWeaponInHand Weapon, FVector Location, FR
 			SpawnWeaponActor = nullptr;
 			break;
 		}
-		ClearValueOfWeaponInHand();
+
+		ClearValueOfWeaponInHand(Weapon);
+
 	return SpawnWeaponActor;
 }
 
 void ASpawnManager::ChoiceLastWeaponInHand()
 {
-	check(GetWorld());
-	CurrentPawn = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (!CurrentPawn)
-	{
-		return;
-	}	
 	if (IsValid(CurrentPawn->GetAttachedActorLeftHand()))
 	{
 		ChoiceNowForLeftOrRightHand(CurrentPawn->GetAttachedActorLeftHand(), CurrentGameInstance->LastWeaponInLeftHand);
@@ -64,30 +61,29 @@ void ASpawnManager::ChoiceLastWeaponInHand()
 
 void ASpawnManager::ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand)
 {
-	if (Hand)
+	if (!Hand)
 	{
-		if (Hand->GetClass()->IsChildOf(APistol::StaticClass()))
-		{
-			LastWeaponInHand = LastWeaponInHand::Pistol;
-			CurrentGameInstance->WasTransitionBetweenLevels = true;
-		}
-		else if (Hand->GetClass()->IsChildOf(AUzi::StaticClass()))
-		{
-			LastWeaponInHand = LastWeaponInHand::Uzi;
-			CurrentGameInstance->WasTransitionBetweenLevels = true;
-		}
-		else
-		{
-			LastWeaponInHand = LastWeaponInHand::None;
-			CurrentGameInstance->WasTransitionBetweenLevels = false;
-		}
+		return;
 	}
+
+	if (Hand->GetClass()->IsChildOf(APistol::StaticClass()))
+	{
+		LastWeaponInHand = LastWeaponInHand::Pistol;
+	}
+	else if (Hand->GetClass()->IsChildOf(AUzi::StaticClass()))
+	{
+		LastWeaponInHand = LastWeaponInHand::Uzi;
+	}
+	else
+	{
+		LastWeaponInHand = LastWeaponInHand::None;
+	}
+	
 }
 
-void ASpawnManager::ClearValueOfWeaponInHand()
+void ASpawnManager::ClearValueOfWeaponInHand(TEnumAsByte<LastWeaponInHand>& Weapon)
 {
-	CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::None;
-	CurrentGameInstance->LastWeaponInRightHand = LastWeaponInHand::None;
+	Weapon = LastWeaponInHand::None;
 }
 
 void ASpawnManager::Tick(float DeltaTime)

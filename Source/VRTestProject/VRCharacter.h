@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "VRTestProjectGameInstance.h"
 #include "Components/SplineMeshComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/WidgetInteractionComponent.h"
@@ -119,6 +120,11 @@ private:
 	UPROPERTY()
 	FTimerHandle FTimerHandleWasTransitionBetweenLevels;
 
+	UVRTestProjectGameInstance* CurrentGameInstance;
+
+	UPROPERTY()
+	bool WeaponDropDelay;
+
 	
 
 protected:
@@ -157,7 +163,7 @@ public:
 	void SplineConstructionToWidget(UWidgetInteractionComponent* WidgetInteractionComponent, USplineComponent* SplineComponent, bool &HandPointingAtWidget);
 
 	UFUNCTION(BlueprintCallable, Category = "Interface")
-	void CheckAndCallPickUpViaInterface(AActor* TestActor, USceneComponent* AttachTo, FName SocketName);
+	void CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, USceneComponent* AttachTo, FName SocketName);
 
 	UFUNCTION(BlueprintCallable, Category = "GrabItem")
 	AActor* GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh);
@@ -208,6 +214,9 @@ private:
 
 	UFUNCTION()
 	void ChooseToPressButtonOrShoot();
+
+	UFUNCTION()
+	void SpawnWeaponInHand(AActor* AttachedActorInHand, TEnumAsByte<LastWeaponInHand> &LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef);
 
 
 	

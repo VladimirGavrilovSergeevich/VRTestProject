@@ -2,7 +2,6 @@
 
 #pragma once
 #include "VRCharacter.h"
-#include "Weapon/Weapon.h"
 #include "VRTestProjectGameInstance.h"
 #include "Weapon/Pistol.h"
 #include "Weapon/Uzi.h"
@@ -16,11 +15,10 @@ class VRTESTPROJECT_API ASpawnManager : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ASpawnManager();
 
 protected:
-	// Called when the game starts or when spawned
+
 	virtual void BeginPlay() override;
 
 public:	
@@ -31,15 +29,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AUzi> BP_Uzi;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpawnWeapon")
-	TEnumAsByte<LastWeaponInHand> CurrentSpawnWeapon = LastWeaponInHand::None;
 	UPROPERTY()
 	AVRCharacter* CurrentPawn;
 
 	UVRTestProjectGameInstance* CurrentGameInstance;
 
 	UFUNCTION()
-	AActor* SpawnWeapon(LastWeaponInHand Weapon, FVector Location, FRotator Rotation);
+	AActor* SpawnWeapon(TEnumAsByte<LastWeaponInHand>& Weapon, FVector Location, FRotator Rotation);
 
 	UFUNCTION()
 	void ChoiceLastWeaponInHand();
@@ -48,8 +44,7 @@ public:
 	void ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand);
 
 	UFUNCTION()
-	void ClearValueOfWeaponInHand();
-
+	void ClearValueOfWeaponInHand(TEnumAsByte<LastWeaponInHand>& Weapon);
 
 	virtual void Tick(float DeltaTime) override;
 
