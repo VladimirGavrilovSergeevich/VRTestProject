@@ -42,7 +42,7 @@ AActor* ASpawnManager::SpawnWeapon(TEnumAsByte<LastWeaponInHand> &Weapon, FVecto
 			break;
 		}
 
-		ClearValueOfWeaponInHand(Weapon);
+	//	ClearValueOfWeaponInHand(Weapon);
 
 	return SpawnWeaponActor;
 }

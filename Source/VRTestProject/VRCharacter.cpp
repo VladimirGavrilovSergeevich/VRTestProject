@@ -386,6 +386,15 @@ void AVRCharacter::SpawnWeaponInHand(AActor* AttachedActorInHand,TEnumAsByte<Las
 	CheckAndCallPickUpViaInterface(AttachedActorInHand, HandMesh, "None");
 }
 
+void AVRCharacter::DeadCharacter()
+{
+	auto GameManagerRef = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
+	if (!GameManagerRef)
+	GameManagerRef->ClearValueOfWeaponInHand(CurrentGameInstance->LastWeaponInLeftHand);
+	GameManagerRef->ClearValueOfWeaponInHand(CurrentGameInstance->LastWeaponInRightHand);
+	UGameplayStatics::OpenLevel(GetWorld(), "MainMap");
+}
+
 void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
 {
 }
@@ -505,7 +514,7 @@ void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalIm
 
 	if (Health <= 0)
 	{
-		UGameplayStatics::OpenLevel(GetWorld(),"MainMap");
+		DeadCharacter();
 	}
 }
 

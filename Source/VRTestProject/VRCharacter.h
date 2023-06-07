@@ -12,8 +12,6 @@
 #include "GameFramework/Character.h"
 #include "MotionControllerComponent.h"
 #include "Interfaces/InteractionWithObjects.h"
-#include "Weapon/Pistol.h"
-#include "Weapon/Uzi.h"
 #include "VRCharacter.generated.h"
 
 UCLASS()
@@ -60,11 +58,6 @@ public:
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
 		USplineMeshComponent* SplineMeshComponentLeft;
 
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<APistol> BP_Pistol;
-
-		UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TSubclassOf<AUzi> BP_Uzi;
 		
 private:
 	
@@ -218,6 +211,7 @@ private:
 	UFUNCTION()
 	void SpawnWeaponInHand(AActor* AttachedActorInHand, TEnumAsByte<LastWeaponInHand> &LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef);
 
-
+	UFUNCTION()
+	void DeadCharacter();
 	
 };

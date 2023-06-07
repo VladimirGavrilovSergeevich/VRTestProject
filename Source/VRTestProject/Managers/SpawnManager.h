@@ -32,6 +32,7 @@ public:
 	UPROPERTY()
 	AVRCharacter* CurrentPawn;
 
+	UPROPERTY()
 	UVRTestProjectGameInstance* CurrentGameInstance;
 
 	UFUNCTION()
