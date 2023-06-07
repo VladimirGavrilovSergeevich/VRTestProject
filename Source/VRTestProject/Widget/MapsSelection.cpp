@@ -17,8 +17,10 @@ void UMapsSelection::NativeOnInitialized()
 void UMapsSelection::LevelChange()
 {
 	auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-	SpawnManager->ChoiceLastWeaponInHand();//remember the weapon in hand before changing the level
-	
+	if (SpawnManager)
+	{
+		SpawnManager->ChoiceLastWeaponInHand();//remember the weapon in hand before changing the level
+	}	
 	if (UGameplayStatics::GetCurrentLevelName(this) == "MainMap")
 	{
 		UGameplayStatics::OpenLevel(this, "SecondMap");

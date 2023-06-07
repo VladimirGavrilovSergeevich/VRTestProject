@@ -1,5 +1,7 @@
 
 #include "Managers/SpawnManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "SpawnWeaponPoint.h"
 
 ASpawnManager::ASpawnManager()
 {
@@ -15,7 +17,28 @@ void ASpawnManager::BeginPlay()
 	check(CurrentPawn);
 	check(GetWorld());
 }
+void ASpawnManager::SpawnWeaponFromUI(LastWeaponInHand NameWeapon)
+{
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	auto a = UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnWeaponPoint::StaticClass());
 
+	switch (NameWeapon)
+	{
+	case None:
+		break;
+	case Pistol:
+		GetWorld()->SpawnActor<APistol>(BP_Pistol, a->GetActorLocation(), a->GetActorRotation(), SpawnInfo);
+		break;
+	case Uzi:
+		GetWorld()->SpawnActor<AUzi>(BP_Uzi, a->GetActorLocation(), a->GetActorRotation(), SpawnInfo);
+		break;
+	default:
+		break;
+	}
+
+
+}
 AActor* ASpawnManager::SpawnWeapon(TEnumAsByte<LastWeaponInHand> &Weapon, FVector Location, FRotator Rotation)
 {
 	FActorSpawnParameters SpawnInfo;
@@ -53,10 +76,19 @@ void ASpawnManager::ChoiceLastWeaponInHand()
 	{
 		ChoiceNowForLeftOrRightHand(CurrentPawn->GetAttachedActorLeftHand(), CurrentGameInstance->LastWeaponInLeftHand);
 	}
+	else
+	{
+		CurrentGameInstance->LastWeaponInLeftHand = LastWeaponInHand::None;
+	}
+
 	if (IsValid(CurrentPawn->GetAttachedActorRightHand()))
 	{
 		ChoiceNowForLeftOrRightHand(CurrentPawn->GetAttachedActorRightHand(), CurrentGameInstance->LastWeaponInRightHand);
-	}		
+	}	
+	else
+	{
+		CurrentGameInstance->LastWeaponInRightHand = LastWeaponInHand::None;
+	}
 }
 
 void ASpawnManager::ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand)
@@ -78,7 +110,6 @@ void ASpawnManager::ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWe
 	{
 		LastWeaponInHand = LastWeaponInHand::None;
 	}
-	
 }
 
 void ASpawnManager::ClearValueOfWeaponInHand(TEnumAsByte<LastWeaponInHand>& Weapon)

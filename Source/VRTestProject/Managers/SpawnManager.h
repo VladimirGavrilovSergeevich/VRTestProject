@@ -39,6 +39,9 @@ public:
 	AActor* SpawnWeapon(TEnumAsByte<LastWeaponInHand>& Weapon, FVector Location, FRotator Rotation);
 
 	UFUNCTION()
+	void SpawnWeaponFromUI(LastWeaponInHand NameWeapon);
+
+	UFUNCTION()
 	void ChoiceLastWeaponInHand();
 
 	UFUNCTION()
