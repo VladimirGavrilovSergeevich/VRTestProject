@@ -14,8 +14,12 @@ class VRTESTPROJECT_API UHealthBar : public UUserWidget
 	GENERATED_BODY()
 public:
 
+	UPROPERTY(BlueprintReadOnly)
+	int AmmoCountForUI{0};
+
 	UFUNCTION(BlueprintCallable)
-		float GetHealthPercent();
+	float GetHealthPercent();
+	
 protected:
 	
 };

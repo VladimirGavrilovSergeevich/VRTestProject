@@ -16,3 +16,4 @@ float UHealthBar::GetHealthPercent()
         return 0.0f;
     }
 }
+

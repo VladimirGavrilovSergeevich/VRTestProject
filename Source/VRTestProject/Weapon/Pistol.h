@@ -30,7 +30,16 @@ class VRTESTPROJECT_API APistol : public AWeapon
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacterBullet> BP_CharacterBullet;
 
-	
+	UPROPERTY()
+	int32 MaxAmmoCount{8};
+
+	UPROPERTY()
+	int32 CurrentAmmoCount{MaxAmmoCount};
+
+	UPROPERTY()
+	UPrimitiveComponent* LastOverlapActorComp{nullptr};
+
+
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
 
 	
@@ -40,4 +49,13 @@ class VRTESTPROJECT_API APistol : public AWeapon
 	virtual void Fire() override;
 
 	virtual void StopFire() override;
+
+	UFUNCTION()
+	bool AmmoCheck();
+
+	UFUNCTION()
+	void LoadAmmoIntoWeapon();
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
