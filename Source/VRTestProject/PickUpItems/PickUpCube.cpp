@@ -41,3 +41,11 @@ void APickUpCube::StopFire()
 {
 }
 
+void APickUpCube::LeftHandAmmoInWeapon(int32 AmmoCount)
+{
+}
+
+void APickUpCube::RightHandAmmoInWeapon(int32 AmmoCount)
+{
+}
+

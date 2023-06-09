@@ -35,4 +35,9 @@ public:
 	UFUNCTION()
 	virtual void StopFire() override;
 
+	UFUNCTION()
+	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
+
+	UFUNCTION()
+	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
 };

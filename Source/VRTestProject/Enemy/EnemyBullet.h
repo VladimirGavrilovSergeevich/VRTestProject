@@ -20,8 +20,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementComponent")
 		UProjectileMovementComponent* ProjectileMovementComponent;
 
+	UPROPERTY()
+	FTimerHandle FTimerHandleDestroy;
+
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void BulletDestroy();
 
 public:	
 	virtual void Tick(float DeltaTime) override;

@@ -33,4 +33,11 @@ public:
 
 	UFUNCTION()
 	virtual void StopFire() = 0;
+
+	UFUNCTION()
+	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) = 0;
+
+	UFUNCTION()
+	virtual void RightHandAmmoInWeapon(int32 AmmoCount) = 0;
+
 };

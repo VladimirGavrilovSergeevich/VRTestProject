@@ -17,3 +17,30 @@ float UHealthBar::GetHealthPercent()
     }
 }
 
+int UHealthBar::GetLeftHandAmmoCount()
+{
+    const auto OwnerPlayer = Cast<AVRCharacter>(GetOwningPlayerPawn());
+    if (OwnerPlayer)
+    {
+        return  OwnerPlayer->GetLeftHandCurrentAmmoCountInWeapon();
+    }
+    else
+    {
+        return 0;
+    }
+    
+}
+
+int UHealthBar::GetRightHandAmmoCount()
+{
+    const auto OwnerPlayer = Cast<AVRCharacter>(GetOwningPlayerPawn());
+    if (OwnerPlayer)
+    {
+        return  OwnerPlayer->GetRightHandCurrentAmmoCountInWeapon();
+    }
+    else
+    {
+        return 0;
+    }
+}
+

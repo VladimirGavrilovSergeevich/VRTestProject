@@ -37,7 +37,10 @@ class VRTESTPROJECT_API APistol : public AWeapon
 	int32 CurrentAmmoCount{MaxAmmoCount};
 
 	UPROPERTY()
-	UPrimitiveComponent* LastOverlapActorComp{nullptr};
+	AActor* CharacterRef{nullptr};
+
+	UPROPERTY()
+	USceneComponent* PistolAttachToHandNow{nullptr};
 
 
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
@@ -50,11 +53,19 @@ class VRTESTPROJECT_API APistol : public AWeapon
 
 	virtual void StopFire() override;
 
+	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
+
+	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
+
 	UFUNCTION()
 	bool AmmoCheck();
 
 	UFUNCTION()
 	void LoadAmmoIntoWeapon();
+
+	UFUNCTION()
+	void SendCountHandAmmoInWeapon();
+
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

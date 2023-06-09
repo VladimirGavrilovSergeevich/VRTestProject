@@ -457,6 +457,14 @@ void AVRCharacter::StopFire()
 {
 
 }
+void AVRCharacter::LeftHandAmmoInWeapon(int32 AmmoCount)
+{
+	LeftHandCurrentAmmoCountInWeapon = AmmoCount;
+}
+void AVRCharacter::RightHandAmmoInWeapon(int32 AmmoCount)
+{
+	RightHandCurrentAmmoCountInWeapon = AmmoCount;
+}
 float AVRCharacter::GetHealth() const
 {
 	return Health;
@@ -464,6 +472,14 @@ float AVRCharacter::GetHealth() const
 float AVRCharacter::GetMaxHealth() const
 {
 	return MaxHealth;
+}
+int32 AVRCharacter::GetLeftHandCurrentAmmoCountInWeapon()
+{
+	return LeftHandCurrentAmmoCountInWeapon;
+}
+int32 AVRCharacter::GetRightHandCurrentAmmoCountInWeapon()
+{
+	return RightHandCurrentAmmoCountInWeapon;
 }
 AActor* AVRCharacter::GetAttachedActorLeftHand()
 {

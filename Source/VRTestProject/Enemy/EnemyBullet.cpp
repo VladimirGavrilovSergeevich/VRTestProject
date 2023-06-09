@@ -1,6 +1,7 @@
 
 
 #include "Enemy/EnemyBullet.h"
+#include "TimerManager.h"
 
 AEnemyBullet::AEnemyBullet()
 {
@@ -12,7 +13,13 @@ AEnemyBullet::AEnemyBullet()
 void AEnemyBullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	GetWorldTimerManager().SetTimer(FTimerHandleDestroy, this, &AEnemyBullet::BulletDestroy, 5, false);	
+}
+
+void AEnemyBullet::BulletDestroy()
+{
+	Destroy();
 }
 
 void AEnemyBullet::Tick(float DeltaTime)

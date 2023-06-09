@@ -118,6 +118,12 @@ private:
 	UPROPERTY()
 	bool WeaponDropDelay;
 
+	UPROPERTY()
+	int32 LeftHandCurrentAmmoCountInWeapon{0};
+
+	UPROPERTY()
+	int32 RightHandCurrentAmmoCountInWeapon{0};
+
 	
 
 protected:
@@ -136,9 +142,21 @@ public:
 
 	virtual void StopFire() override;
 
+	UFUNCTION()
+	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
+
+	UFUNCTION()
+	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
+
 	float GetHealth() const;
 
 	float GetMaxHealth() const;
+
+	UFUNCTION()
+	int32 GetLeftHandCurrentAmmoCountInWeapon();
+
+	UFUNCTION()
+	int32 GetRightHandCurrentAmmoCountInWeapon();
 
 	UFUNCTION()
 	AActor* GetAttachedActorLeftHand();

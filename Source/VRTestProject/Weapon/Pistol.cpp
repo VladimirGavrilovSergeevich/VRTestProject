@@ -22,16 +22,23 @@ void APistol::PickUp(USceneComponent* AttachTo, FName SocketName)
 	StaticMesh->SetSimulatePhysics(false);
 	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), CurrentObjectSocketName);
 
-	TArray<USceneComponent*> a;
-	AttachTo->GetChildrenComponents(true,a);
-	a.FindItemByClass(UHealthBar);
-		
+	CharacterRef = AttachTo->GetOwner();
+	PistolAttachToHandNow = AttachTo;
+
+	SendCountHandAmmoInWeapon();
 }
 
 void APistol::Drop()
 {
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	StaticMesh->SetSimulatePhysics(true);
+
+	SendCountHandAmmoInWeapon();
+
+	PistolAttachToHandNow = nullptr;
+
+
+
 }
 
 void APistol::Fire()
@@ -45,9 +52,7 @@ void APistol::Fire()
 
 		GetWorld()->SpawnActor<ACharacterBullet>(BP_CharacterBullet, LocationStartBullet, RotationStartBullet, SpawnInfo);
 
-		auto HealthBarRef = Cast<UHealthBar>(UGameplayStatics::GetActorOfClass(GetWorld(), UHealthBar::StaticClass()));
-		//auto HealthBarRef = Cast<UHealthBar>(UHealthBar::StaticClass);
-		HealthBarRef->AmmoCountForUI = CurrentAmmoCount;
+		SendCountHandAmmoInWeapon();
 	}
 }
 
@@ -55,16 +60,25 @@ void APistol::StopFire()
 {
 }
 
+void APistol::LeftHandAmmoInWeapon(int32 AmmoCount)
+{
+}
+
+void APistol::RightHandAmmoInWeapon(int32 AmmoCount)
+{
+}
+
 bool APistol::AmmoCheck()
 {
-	if(CurrentAmmoCount-- <= 0)
+	--CurrentAmmoCount;
+	if(CurrentAmmoCount >= 0)
 	{
-		return false;
+		return true;
 	}
 	else
 	{
 		CurrentAmmoCount = 0;
-		return true;
+		return false;
 	}
 }
 
@@ -73,13 +87,31 @@ void APistol::LoadAmmoIntoWeapon()
 	CurrentAmmoCount = MaxAmmoCount;
 }
 
+void APistol::SendCountHandAmmoInWeapon()
+{
+	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(CharacterRef);
+	if (Interface && PistolAttachToHandNow != nullptr)
+	{
+		if (PistolAttachToHandNow->GetName() == TEXT("HandMeshLeft"))
+		{
+			Interface->LeftHandAmmoInWeapon(CurrentAmmoCount);
+		}
+		else
+		{
+			Interface->RightHandAmmoInWeapon(CurrentAmmoCount);
+		}
+
+	}
+
+}
+
 void APistol::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherComp->GetClass() == USkeletalMeshComponent::StaticClass() && LastOverlapActorComp != OtherComp)
+	if (OtherComp->GetClass() == USkeletalMeshComponent::StaticClass() && PistolAttachToHandNow != OtherComp) // reload with other hand
 	{
-		LastOverlapActorComp = OtherComp;
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Overlap: %s"), *OtherComp->GetName()));
 		LoadAmmoIntoWeapon();
+
+		SendCountHandAmmoInWeapon();
 	}
 
 }

@@ -35,3 +35,11 @@ void AWeapon::StopFire()
 {
 }
 
+void AWeapon::LeftHandAmmoInWeapon(int32 AmmoCount)
+{
+}
+
+void AWeapon::RightHandAmmoInWeapon(int32 AmmoCount)
+{
+}
+

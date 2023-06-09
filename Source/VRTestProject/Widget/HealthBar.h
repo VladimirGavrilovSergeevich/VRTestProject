@@ -19,6 +19,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealthPercent();
+
+	UFUNCTION(BlueprintCallable)
+	int GetLeftHandAmmoCount();
+
+	UFUNCTION(BlueprintCallable)
+	int GetRightHandAmmoCount();
 	
 protected:
 	
