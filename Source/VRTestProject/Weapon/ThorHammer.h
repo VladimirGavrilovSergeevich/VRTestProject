@@ -18,15 +18,6 @@ public:
 
 	AThorHammer();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
-	UStaticMeshComponent* StaticMesh;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
-	USceneComponent* GunMuzzle;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
-	FName CurrentObjectSocketName = "ThorHammerSocket";
-
 private:
 	bool HammerFly = false;
 

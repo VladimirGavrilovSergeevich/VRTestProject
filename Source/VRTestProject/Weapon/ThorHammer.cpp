@@ -6,11 +6,8 @@
 AThorHammer::AThorHammer()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	StaticMesh->SetSimulatePhysics(true);
 
-	GunMuzzle = CreateDefaultSubobject<USceneComponent>("GunMuzzle");
-	GunMuzzle->SetupAttachment(StaticMesh);
+	CurrentObjectSocketName = "ThorHammerSocket";
 }
 
 void AThorHammer::Tick(float DeltaTime)
@@ -34,7 +31,6 @@ void AThorHammer::Drop()
 
 	DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
 	StaticMesh->SetSimulatePhysics(true);
-
 }
 
 void AThorHammer::Fire()
