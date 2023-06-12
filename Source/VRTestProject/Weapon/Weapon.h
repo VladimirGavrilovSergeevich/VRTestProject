@@ -3,13 +3,11 @@
 
 #include "CharacterBullet.h"
 #include "Components/BoxComponent.h"
-#include "Interfaces/InteractionWithObjects.h"
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "PickUpItems/BasePickUpObject.h"
 #include "Weapon.generated.h"
 
 UCLASS()
-class VRTESTPROJECT_API AWeapon : public AActor, public IInteractionWithObjects
+class VRTESTPROJECT_API AWeapon : public ABasePickUpObject
 {
 	GENERATED_BODY()
 	
@@ -56,24 +54,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-
-	UFUNCTION(Category = "InterfaceForObject")
+	//Interfaces
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
 
-	UFUNCTION(Category = "InterfaceForObject")
 	virtual void Drop() override;
-
-	UFUNCTION(Category = "InterfaceForObject")
-	virtual void Fire() override;
-
-	UFUNCTION(Category = "InterfaceForObject")
-	virtual void StopFire() override;
-
-	UFUNCTION(Category = "InterfaceForObject")
-	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
-
-	UFUNCTION(Category = "InterfaceForObject")
-	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
 
 
 	UFUNCTION()

@@ -5,26 +5,11 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Enemy/EnemyBullet.h"
-#include "VRTestProjectGameInstance.h"
 #include "Managers/SpawnManager.h"
 
 AVRCharacter::AVRCharacter() :
 	//init Variable
-	CanCharacterRotation(false),
-	MinRateForCharacterRotation(0.3f),
-	CanTryGrabLeft(true),
-	CanTryGrabRight(true),
-	CanTryTriggerRight(true),
-	CanTryTriggerLeft(true),
-	AttachedActorLeftHand(nullptr),
-	AttachedActorRightHand(nullptr),
-	CanTryStopFireRight(false),
-	CanTryStopFireLeft(false),
-	MaxHealth(100),
-	Health(MaxHealth),
-	RightHandPointingAtWidget(false),
-	LeftHandPointingAtWidget(false),
-	WeaponDropDelay(true)
+	Health(MaxHealth)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -75,9 +60,6 @@ void AVRCharacter::BeginPlay()
 	LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
 	RightHandAnimInstance = Cast<UHandAnimInstance>(HandMeshRight->GetAnimInstance());
 
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
 	CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
 	if (!CurrentGameInstance)
 	{
@@ -90,7 +72,8 @@ void AVRCharacter::BeginPlay()
 	}
 	SpawnWeaponInHand(AttachedActorLeftHand, CurrentGameInstance->LastWeaponInLeftHand, HandMeshLeft, GameManagerRef);
 	SpawnWeaponInHand(AttachedActorRightHand, CurrentGameInstance->LastWeaponInRightHand, HandMeshRight, GameManagerRef);
-	GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 0.5, true);
+	GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 0.5, true); //this is necessary the weapon does not fall from the hands when changing the level
+
 }
 
 void AVRCharacter::Tick(float DeltaTime)
@@ -426,7 +409,7 @@ AActor* AVRCharacter::GetGrabItemNearMotionController(UMotionControllerComponent
 		LocalGrabPosition = MotionControllerRight->GetRightVector() * (-4.0f) + MotionController->GetComponentLocation();
 	}
 	TArray<FHitResult> OutActors;
-	FCollisionShape MySphere = FCollisionShape::MakeSphere(5.0f);
+	FCollisionShape MySphere = FCollisionShape::MakeSphere(4.0f);
 	FCollisionQueryParams Params("GrabSphere", false, this);
 	if (GetWorld()->SweepMultiByObjectType(OutActors, LocalGrabPosition, LocalGrabPosition, FQuat::Identity, ECC_WorldDynamic, MySphere, Params))// do sphere trace for grab object
 	{
@@ -445,7 +428,6 @@ AActor* AVRCharacter::GetGrabItemNearMotionController(UMotionControllerComponent
 			}
 		}
 	}
-
 	return NearestOverlappingActor;
 }
 

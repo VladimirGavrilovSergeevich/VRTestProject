@@ -21,23 +21,21 @@ void ASpawnManager::SpawnWeaponFromUI(LastWeaponInHand NameWeapon)
 {
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	auto a = UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnWeaponPoint::StaticClass());
+	auto CurrentSpawnWeaponPoint = UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnWeaponPoint::StaticClass());
 
 	switch (NameWeapon)
 	{
 	case None:
 		break;
 	case Pistol:
-		GetWorld()->SpawnActor<APistol>(BP_Pistol, a->GetActorLocation(), a->GetActorRotation(), SpawnInfo);
+		GetWorld()->SpawnActor<APistol>(BP_Pistol, CurrentSpawnWeaponPoint->GetActorLocation(), CurrentSpawnWeaponPoint->GetActorRotation(), SpawnInfo);
 		break;
 	case Uzi:
-		GetWorld()->SpawnActor<AUzi>(BP_Uzi, a->GetActorLocation(), a->GetActorRotation(), SpawnInfo);
+		GetWorld()->SpawnActor<AUzi>(BP_Uzi, CurrentSpawnWeaponPoint->GetActorLocation(), CurrentSpawnWeaponPoint->GetActorRotation(), SpawnInfo);
 		break;
 	default:
 		break;
 	}
-
-
 }
 AActor* ASpawnManager::SpawnWeapon(TEnumAsByte<LastWeaponInHand> &Weapon, FVector Location, FRotator Rotation)
 {
@@ -64,8 +62,6 @@ AActor* ASpawnManager::SpawnWeapon(TEnumAsByte<LastWeaponInHand> &Weapon, FVecto
 			SpawnWeaponActor = nullptr;
 			break;
 		}
-
-	//	ClearValueOfWeaponInHand(Weapon);
 
 	return SpawnWeaponActor;
 }

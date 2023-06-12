@@ -16,4 +16,6 @@ public:
     APistol();
    
 	virtual void Fire() override;
+
+	virtual void Drop() override;
 };

@@ -13,7 +13,7 @@ class VRTESTPROJECT_API ATrainingTarget : public AEnemy
 
 public:
 	ATrainingTarget();
-	
+	//AddComponents
 	UPROPERTY(EditDefaultsOnly, Category = "Root")
 	USceneComponent* Root;
 

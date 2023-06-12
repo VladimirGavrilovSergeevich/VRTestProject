@@ -12,6 +12,7 @@ UCLASS()
 class VRTESTPROJECT_API UHealthBar : public UUserWidget
 {
 	GENERATED_BODY()
+
 public:
 
 	UPROPERTY(BlueprintReadOnly)
@@ -25,7 +26,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetRightHandAmmoCount();
-	
-protected:
-	
 };

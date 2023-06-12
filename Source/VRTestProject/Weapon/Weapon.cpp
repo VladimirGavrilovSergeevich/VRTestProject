@@ -50,22 +50,6 @@ void AWeapon::Drop()
 	WeaponAttachToHandNow = nullptr;
 }
 
-void AWeapon::Fire()
-{
-}
-
-void AWeapon::StopFire()
-{
-}
-
-void AWeapon::LeftHandAmmoInWeapon(int32 AmmoCount)
-{
-}
-
-void AWeapon::RightHandAmmoInWeapon(int32 AmmoCount)
-{
-}
-
 bool AWeapon::AmmoCheck()
 {
 	--CurrentAmmoCount;

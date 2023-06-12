@@ -20,111 +20,116 @@ class VRTESTPROJECT_API AVRCharacter : public ACharacter, public IInteractionWit
 	GENERATED_BODY()
 
 public:
+
 	AVRCharacter();
+	//AddCharacterComponents
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UCameraComponent* VRCamera;
 
-	    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		UCameraComponent* VRCamera;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+	USkeletalMeshComponent* HandMeshRight;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
-		USkeletalMeshComponent* HandMeshRight;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+	USkeletalMeshComponent* HandMeshLeft;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
-		USkeletalMeshComponent* HandMeshLeft;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+	UMotionControllerComponent* MotionControllerRight;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
-		UMotionControllerComponent* MotionControllerRight;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+	UMotionControllerComponent* MotionControllerLeft;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
-		UMotionControllerComponent* MotionControllerLeft;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+	UWidgetComponent* WidgetComponent;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
-		UWidgetComponent* WidgetComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+	UWidgetInteractionComponent* WidgetInteractionComponentRight;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
-		UWidgetInteractionComponent* WidgetInteractionComponentRight;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+	UWidgetInteractionComponent* WidgetInteractionComponentLeft;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
-		UWidgetInteractionComponent* WidgetInteractionComponentLeft;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+	USplineComponent* SplineComponentRight;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
-		USplineComponent* SplineComponentRight;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+	USplineComponent* SplineComponentLeft;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
-		USplineComponent* SplineComponentLeft;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+	USplineMeshComponent* SplineMeshComponentRight;
 
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
-		USplineMeshComponent* SplineMeshComponentRight;
-
-		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
-		USplineMeshComponent* SplineMeshComponentLeft;
-
-		
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
+	USplineMeshComponent* SplineMeshComponentLeft;
+	//EndAddCharacterComponents
 private:
-	
+
+	//Animations
 	UPROPERTY()
 	UHandAnimInstance* LeftHandAnimInstance;
 
 	UPROPERTY()
 	UHandAnimInstance* RightHandAnimInstance;
 
-	UPROPERTY()
-	bool CanCharacterRotation;
-
-	UPROPERTY()
-	float MinRateForCharacterRotation;
-
-	UPROPERTY()
-	bool CanTryGrabLeft;
-
-	UPROPERTY()
-	bool CanTryGrabRight;
-
-	UPROPERTY()
-	bool CanTryTriggerRight;
-
-	UPROPERTY()
-	bool CanTryTriggerLeft;
-
-	UPROPERTY()
-	bool CanTryStopFireRight;
-
-	UPROPERTY()
-	bool CanTryStopFireLeft;
-
-
+	//PickUps
 	UPROPERTY()
 	AActor* AttachedActorLeftHand;
 
 	UPROPERTY()
 	AActor* AttachedActorRightHand;
 
+	//Inputs
 	UPROPERTY()
-	float MaxHealth;
+	bool CanCharacterRotation = false;
+
+	UPROPERTY()
+	float MinRateForCharacterRotation = 0.3f;
+
+	UPROPERTY()
+	bool CanTryGrabLeft = true;
+
+	UPROPERTY()
+	bool CanTryGrabRight = true;
+
+	UPROPERTY()
+	bool CanTryTriggerRight = true;
+
+	UPROPERTY()
+	bool CanTryTriggerLeft = true;
+
+	UPROPERTY()
+	bool CanTryStopFireRight = false;
+
+	UPROPERTY()
+	bool CanTryStopFireLeft = false;
+
+	//Health
+	UPROPERTY()
+	float MaxHealth = 100;
 
 	UPROPERTY()
 	float Health;
 
+	//Widgets
 	UPROPERTY()
-	bool RightHandPointingAtWidget;
+	bool RightHandPointingAtWidget = false;
 
 	UPROPERTY()
-	bool LeftHandPointingAtWidget;
+	bool LeftHandPointingAtWidget = false;
+
+	//Weapon
+	UPROPERTY()
+	bool WeaponDropDelay = true;
+
+	UPROPERTY()
+	int32 LeftHandCurrentAmmoCountInWeapon = 0;
+
+	UPROPERTY()
+	int32 RightHandCurrentAmmoCountInWeapon = 0;
+
 
 	UPROPERTY()
 	FTimerHandle FTimerHandleWasTransitionBetweenLevels;
 
+	UPROPERTY()
 	UVRTestProjectGameInstance* CurrentGameInstance;
-
-	UPROPERTY()
-	bool WeaponDropDelay;
-
-	UPROPERTY()
-	int32 LeftHandCurrentAmmoCountInWeapon{0};
-
-	UPROPERTY()
-	int32 RightHandCurrentAmmoCountInWeapon{0};
-
-	
 
 protected:
 	virtual void BeginPlay() override;
@@ -134,6 +139,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	//Interfaces
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
 
 	virtual void Drop() override;
@@ -142,14 +148,15 @@ public:
 
 	virtual void StopFire() override;
 
-	UFUNCTION()
 	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
 
-	UFUNCTION()
 	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
 
+	//Get
+	UFUNCTION()
 	float GetHealth() const;
 
+	UFUNCTION()
 	float GetMaxHealth() const;
 
 	UFUNCTION()
@@ -164,72 +171,78 @@ public:
 	UFUNCTION()
 	AActor* GetAttachedActorRightHand();
 
-	UFUNCTION()
-	void SetWasTransitionBetweenLevels();
+	UFUNCTION(BlueprintCallable, Category = "GrabItem")
+	AActor* GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh);
 
+	//Spline
 	UFUNCTION()
 	void UpdateSplineMesh(USplineComponent* SplineComponent, USplineMeshComponent* SplineMeshComponent);
 
 	UFUNCTION()
 	void SplineConstructionToWidget(UWidgetInteractionComponent* WidgetInteractionComponent, USplineComponent* SplineComponent, bool &HandPointingAtWidget);
 
+	//
 	UFUNCTION(BlueprintCallable, Category = "Interface")
 	void CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, USceneComponent* AttachTo, FName SocketName);
 
-	UFUNCTION(BlueprintCallable, Category = "GrabItem")
-	AActor* GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh);
-
 	UFUNCTION()
-		void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
-
-	UFUNCTION(Category = "Hand")
+	//Input Hand
+	UFUNCTION()
 	void GripLeft(float Rate);
 
-	UFUNCTION(Category = "Hand")
+	UFUNCTION()
 	void GripRight(float Rate);
 
-	UFUNCTION(Category = "Hand")
+	UFUNCTION()
 	void TriggerLeft(float Rate);
 
-	UFUNCTION(Category = "Hand")
+	UFUNCTION()
 	void TriggerRight(float Rate);
 
-	UFUNCTION(Category = "Move")
+	//Input Move
+	UFUNCTION()
 	void MoveForward(float Val);
 
-	UFUNCTION(Category = "Move")
+	UFUNCTION()
 	void MoveRight(float Val);
 
-	UFUNCTION(Category = "WidgetInteraction")
-	void TriggerRightActionPressed();
-
-	UFUNCTION(Category = "WidgetInteraction")
-	void TriggerRightActionReleased();
-
-	UFUNCTION(Category = "WidgetInteraction")
-	void TriggerLeftActionPressed();
-
-	UFUNCTION(Category = "WidgetInteraction")
-	void TriggerLeftActionReleased();
-
-	UFUNCTION(Category = "Move")
+	UFUNCTION()
 	void CharacterRotation(float Rate);
 
+	//Input WidgetInteraction
+	UFUNCTION()
+	void TriggerRightActionPressed();
+
+	UFUNCTION()
+	void TriggerRightActionReleased();
+
+	UFUNCTION()
+	void TriggerLeftActionPressed();
+
+	UFUNCTION()
+	void TriggerLeftActionReleased();
+
+	//Input Fire or Widget
 	UFUNCTION()
 	void DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire, bool &HandPointingAtWidget);
 
 	UFUNCTION()
-	void DoPressButtonOnWidget(float& TriggerValue , bool& CanTryTrigger);
-
-	UFUNCTION()
 	void ChooseToPressButtonOrShoot();
 
+
+	UFUNCTION()
+	void DoPressButtonOnWidget(float& TriggerValue , bool& CanTryTrigger);
+
+	//SpawnCharacter
 	UFUNCTION()
 	void SpawnWeaponInHand(AActor* AttachedActorInHand, TEnumAsByte<LastWeaponInHand> &LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef);
 
 	UFUNCTION()
 	void DeadCharacter();
-	
+
+	UFUNCTION()
+	void SetWasTransitionBetweenLevels();
 };

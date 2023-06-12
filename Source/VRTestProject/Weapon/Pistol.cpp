@@ -25,5 +25,16 @@ void APistol::Fire()
 	}
 }
 
+void APistol::Drop()
+{
+	StopFire();
+	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	StaticMesh->SetSimulatePhysics(true);
+
+	SendCountHandAmmoInWeapon(0);
+
+	WeaponAttachToHandNow = nullptr;
+}
+
 
 

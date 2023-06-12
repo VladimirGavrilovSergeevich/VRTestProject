@@ -13,6 +13,7 @@ class VRTESTPROJECT_API UMapsSelection : public UUserWidget
 	GENERATED_BODY()
 	
 protected:
+
 	UPROPERTY(meta = (BindWidget))
 	UButton* LevelChangeButton;
 

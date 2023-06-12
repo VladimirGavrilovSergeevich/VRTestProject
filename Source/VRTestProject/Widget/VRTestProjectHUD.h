@@ -14,9 +14,6 @@ class VRTESTPROJECT_API AVRTestProjectHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-public:
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<UHealthBar> HealthBarWidget;
 protected:
 	virtual void BeginPlay() override;
 };

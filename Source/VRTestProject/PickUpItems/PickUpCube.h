@@ -2,14 +2,11 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "Interfaces/InteractionWithObjects.h"
-
+#include "PickUpItems/BasePickUpObject.h"
 #include "PickUpCube.generated.h"
 
 UCLASS()
-class VRTESTPROJECT_API APickUpCube : public AActor, public IInteractionWithObjects
+class VRTESTPROJECT_API APickUpCube : public ABasePickUpObject
 {
 	GENERATED_BODY()
 	
@@ -22,27 +19,9 @@ public:
   UPROPERTY()
   FName CurrentObjectSocketName{"None"};
 
-protected:
-	virtual void BeginPlay() override;
-
 public:	
-	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
+	//Interfaces
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
 
-	UFUNCTION()
 	virtual void Drop() override;
-
-	UFUNCTION()
-	virtual void Fire() override;
-
-	UFUNCTION()
-	virtual void StopFire() override;
-
-	UFUNCTION()
-	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
-
-	UFUNCTION()
-	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
 };
