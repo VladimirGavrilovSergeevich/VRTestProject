@@ -13,8 +13,11 @@ void ASpawnManager::BeginPlay()
 	Super::BeginPlay();
 	CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
 	check(CurrentGameInstance);
-	CurrentPawn = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	check(CurrentPawn);
+	if (IsValid(GetWorld()->GetFirstPlayerController()))
+	{
+		CurrentPawn = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	}
+	//check(CurrentPawn);
 	check(GetWorld());
 }
 void ASpawnManager::SpawnWeaponFromUI(LastWeaponInHand NameWeapon)

@@ -84,6 +84,8 @@ void AEnemyRhombus::Tick(float DeltaTime)
 void AEnemyRhombus::BeginPlay()
 {
 	Super::BeginPlay();
-
-	CharacterRef = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	if (IsValid(GetWorld()->GetFirstPlayerController()))
+	{
+		CharacterRef = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	}
 }
