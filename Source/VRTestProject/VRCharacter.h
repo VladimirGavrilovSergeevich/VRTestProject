@@ -14,6 +14,41 @@
 #include "Interfaces/InteractionWithObjects.h"
 #include "VRCharacter.generated.h"
 
+USTRUCT(BlueprintType)
+struct FVRCharacterHMDStruct
+{
+	GENERATED_BODY()
+
+		//MotionControllerRight
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector MotionControllerRightLocalLocation;
+
+	    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator MotionControllerRightLocalRotation;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UMotionControllerComponent* MotionControllerRight;
+
+		//MotionControllerLeft
+	    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector MotionControllerLeftLocalLocation;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator MotionControllerLeftLocalRotation;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UMotionControllerComponent* MotionControllerLeft;
+
+		//VRCamera
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector VRCameraLocalLocation;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FRotator VRCameraLocalRotation;
+
+		UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UCameraComponent* VRCamera;
+};
 UCLASS()
 class VRTESTPROJECT_API AVRCharacter : public ACharacter, public IInteractionWithObjects
 {
@@ -59,6 +94,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widget")
 	USplineMeshComponent* SplineMeshComponentLeft;
 	//EndAddCharacterComponents
+
+	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
+	FVRCharacterHMDStruct VRCharacterHMDStruct;
 private:
 
 	//Animations
@@ -187,6 +225,17 @@ public:
 
 	UFUNCTION()
 	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_VRCharacterHMDStruct();
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	void RepVRCharacterHMDStructFromClient(FVector VsRStruct);
+
+
 
 private:
 	//Input Hand

@@ -51,8 +51,16 @@ AVRCharacter::AVRCharacter() :
 	SplineMeshComponentLeft->SetupAttachment(SplineComponentLeft);
 
 	OnActorHit.AddDynamic(this, &AVRCharacter::OnHit);
+
+	bReplicates = true;
 }
 
+void AVRCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME(AVRCharacter, VRCharacterHMDStruct);
+}
 void AVRCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -514,6 +522,16 @@ void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalIm
 	{
 		DeadCharacter();
 	}
+}
+
+void AVRCharacter::OnRep_VRCharacterHMDStruct()
+{
+
+}
+
+void AVRCharacter::RepVRCharacterHMDStructFromClient(FVector VsRStruct)
+{
+	//VRCharacterHMDStruct = VRStruct;
 }
 
 
