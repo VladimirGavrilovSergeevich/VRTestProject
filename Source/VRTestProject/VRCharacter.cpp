@@ -5,6 +5,12 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Enemy/EnemyBullet.h"
+
+//#include "engine.h"
+#include "Net/UnrealNetwork.h"
+
+//#include "Components/SceneComponent.h"
+
 #include "Managers/SpawnManager.h"
 
 AVRCharacter::AVRCharacter() :
@@ -59,7 +65,7 @@ void AVRCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(AVRCharacter, VRCharacterHMDStruct);
+	DOREPLIFETIME_CONDITION(AVRCharacter, VRCharacterHMDStruct, COND_SkipOwner);
 }
 void AVRCharacter::BeginPlay()
 {
@@ -94,6 +100,24 @@ void AVRCharacter::Tick(float DeltaTime)
 
 	UpdateSplineMesh(SplineComponentRight, SplineMeshComponentRight);
 	UpdateSplineMesh(SplineComponentLeft, SplineMeshComponentLeft);
+	///
+	if (!HasAuthority())
+	{
+		FVRCharacterHMDStruct HMDTempStruct;
+		HMDTempStruct.MotionControllerRightLocalLocation = MotionControllerRight->GetRelativeLocation();
+		HMDTempStruct.MotionControllerRightLocalRotation = MotionControllerRight->GetRelativeRotation();
+		HMDTempStruct.MotionControllerRight = MotionControllerRight;
+
+		HMDTempStruct.MotionControllerLeftLocalLocation = MotionControllerLeft->GetRelativeLocation();
+		HMDTempStruct.MotionControllerLeftLocalRotation = MotionControllerLeft->GetRelativeRotation();
+		HMDTempStruct.MotionControllerLeft = MotionControllerLeft;
+
+		HMDTempStruct.VRCameraLocalLocation = VRCamera->GetRelativeLocation();
+		HMDTempStruct.VRCameraLocalRotation = VRCamera->GetRelativeRotation();
+		HMDTempStruct.VRCamera = VRCamera;
+
+		RepVRCharacterHMDStructFromClient(HMDTempStruct);
+	}
 }
 
 void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -526,12 +550,35 @@ void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalIm
 
 void AVRCharacter::OnRep_VRCharacterHMDStruct()
 {
-
+	if (HasAuthority())
+	{
+		return;
+	}
+	if (IsValid(MotionControllerRight))
+	{
+		MotionControllerRight->SetRelativeLocation(VRCharacterHMDStruct.MotionControllerRightLocalLocation);
+		MotionControllerRight->SetRelativeRotation(VRCharacterHMDStruct.MotionControllerRightLocalRotation);
+	}
+	if (IsValid(MotionControllerLeft))
+	{
+		MotionControllerLeft->SetRelativeLocation(VRCharacterHMDStruct.MotionControllerLeftLocalLocation);
+		MotionControllerLeft->SetRelativeRotation(VRCharacterHMDStruct.MotionControllerLeftLocalRotation);
+	}
+	if (IsValid(VRCamera))
+	{
+		VRCamera->SetRelativeLocation(VRCharacterHMDStruct.VRCameraLocalLocation);
+		VRCamera->SetRelativeRotation(VRCharacterHMDStruct.VRCameraLocalRotation);
+	}
 }
 
-void AVRCharacter::RepVRCharacterHMDStructFromClient(FVector VsRStruct)
+void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacterHMDStruct HMDStruct)
 {
-	//VRCharacterHMDStruct = VRStruct;
+	VRCharacterHMDStruct = HMDStruct;
+}
+
+bool AVRCharacter::RepVRCharacterHMDStructFromClient_Validate(FVRCharacterHMDStruct HMDStruct)
+{
+	return true;
 }
 
 

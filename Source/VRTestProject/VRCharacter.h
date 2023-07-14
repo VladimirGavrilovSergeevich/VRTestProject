@@ -97,6 +97,9 @@ public:
 
 	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
 	FVRCharacterHMDStruct VRCharacterHMDStruct;
+
+	//UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
+	//int32 raz;
 private:
 
 	//Animations
@@ -233,7 +236,7 @@ public:
 	void OnRep_VRCharacterHMDStruct();
 
 	UFUNCTION(Server, unreliable, WithValidation)
-	void RepVRCharacterHMDStructFromClient(FVector VsRStruct);
+	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
 
 
 
