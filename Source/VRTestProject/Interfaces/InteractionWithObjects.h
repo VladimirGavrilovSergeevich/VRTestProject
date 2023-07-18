@@ -37,4 +37,7 @@ public:
 	UFUNCTION()
 	virtual void RightHandAmmoInWeapon(int32 AmmoCount) = 0;
 
+	UFUNCTION()
+	virtual void PickUpOnServer(USceneComponent* AttachTo, FName SocketName) = 0;
+
 };

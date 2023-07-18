@@ -66,6 +66,8 @@ void AVRCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AVRCharacter, VRCharacterHMDStruct, COND_SkipOwner);
+	DOREPLIFETIME(AVRCharacter, HandMeshRight);
+	DOREPLIFETIME(AVRCharacter, HandMeshLeft);
 }
 void AVRCharacter::BeginPlay()
 {
@@ -424,7 +426,8 @@ void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, U
 	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorInHand);
 	if (Interface)
 	{
-		Interface->PickUp(AttachTo,SocketName);
+		Interface->PickUpOnServer(AttachTo,SocketName);
+		//Interface->PickUp(AttachTo,SocketName);
 	}
 }
 
@@ -571,12 +574,33 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 	}
 }
 
+void AVRCharacter::OnRep_PickUpOrDrop()
+{
+	//AttachedActorLeftHand, HandMeshLeft
+	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+	if (Interface)
+	{
+		Interface->PickUp(HandMeshRight, "None");
+		//Interface->PickUp(AttachTo,SocketName);
+	}
+}
+
 void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacterHMDStruct HMDStruct)
 {
 	VRCharacterHMDStruct = HMDStruct;
 }
 
 bool AVRCharacter::RepVRCharacterHMDStructFromClient_Validate(FVRCharacterHMDStruct HMDStruct)
+{
+	return true;
+}
+
+void AVRCharacter::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
+{
+	PickUpOrDrop = true;
+}
+
+bool AVRCharacter::PickUpOnServer_Validate(USceneComponent* AttachTo, FName SocketName)
 {
 	return true;
 }

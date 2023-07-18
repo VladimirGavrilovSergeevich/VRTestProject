@@ -61,10 +61,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UCameraComponent* VRCamera;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+	UPROPERTY(EditAnywhere, replicated, BlueprintReadOnly, Category = "Hand")
 	USkeletalMeshComponent* HandMeshRight;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
+	UPROPERTY(EditAnywhere, replicated, BlueprintReadOnly, Category = "Hand")
 	USkeletalMeshComponent* HandMeshLeft;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hand")
@@ -98,8 +98,8 @@ public:
 	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
 	FVRCharacterHMDStruct VRCharacterHMDStruct;
 
-	//UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
-	//int32 raz;
+	UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
+	bool PickUpOrDrop = false;
 private:
 
 	//Animations
@@ -235,8 +235,14 @@ public:
 	UFUNCTION()
 	void OnRep_VRCharacterHMDStruct();
 
+	UFUNCTION()
+	void OnRep_PickUpOrDrop();
+
 	UFUNCTION(Server, unreliable, WithValidation)
 	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	virtual void PickUpOnServer(USceneComponent* AttachTo, FName SocketName) override;
 
 
 

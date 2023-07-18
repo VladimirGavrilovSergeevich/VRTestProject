@@ -45,3 +45,13 @@ void ABasePickUpObject::RightHandAmmoInWeapon(int32 AmmoCount)
 {
 }
 
+void ABasePickUpObject::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
+{
+	PickUp(AttachTo,SocketName);
+}
+
+bool ABasePickUpObject::PickUpOnServer_Validate(USceneComponent* AttachTo, FName SocketName)
+{
+	return true;
+}
+
