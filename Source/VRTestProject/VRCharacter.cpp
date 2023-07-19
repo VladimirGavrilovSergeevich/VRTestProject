@@ -426,7 +426,15 @@ void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, U
 	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorInHand);
 	if (Interface)
 	{
-		Interface->PickUpOnServer(AttachTo,SocketName);
+	//	if (!HasAuthority())
+	//	{
+			Interface->PickUp(AttachTo,SocketName);
+	//	}
+		//else
+		//{
+		//	Interface->PickUpOnServer(AttachTo, SocketName);
+		//}
+		//Interface->PickUpOnServer(AttachTo,SocketName);
 		//Interface->PickUp(AttachTo,SocketName);
 	}
 }
@@ -576,6 +584,10 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 
 void AVRCharacter::OnRep_PickUpOrDrop()
 {
+	//if (!HasAuthority())
+	//{
+	//	return;
+	//}
 	//AttachedActorLeftHand, HandMeshLeft
 	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
 	if (Interface)

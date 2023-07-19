@@ -1,5 +1,5 @@
 
-
+#include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
 
 AWeapon::AWeapon()
@@ -15,6 +15,8 @@ AWeapon::AWeapon()
 	CollisionMesh->SetupAttachment(StaticMesh);
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
+
+	bReplicates = true;
 }
 
 void AWeapon::BeginPlay()
@@ -94,4 +96,23 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		SendCountHandAmmoInWeapon(CurrentAmmoCount);
 	}
 
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	//DOREPLIFETIME_CONDITION(AVRCharacter, VRCharacterHMDStruct, COND_SkipOwner);
+	DOREPLIFETIME(AWeapon, StaticMesh);
+}
+
+void AWeapon::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
+{
+	WeaponAttachToHandNow = AttachTo;
+	PickUpOrDrop = true;
+}
+
+void AWeapon::OnRep_PickUpOrDrop()
+{
+	PickUp(WeaponAttachToHandNow, "SocketName");
 }

@@ -15,7 +15,7 @@ public:
 
 	AWeapon();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
+	UPROPERTY(EditDefaultsOnly, replicated, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
@@ -68,5 +68,15 @@ public:
 
 	UFUNCTION()
 	void SendCountHandAmmoInWeapon(int32 CurrentAmmoCountInWeapon);
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName) override;
+
+	UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
+		bool PickUpOrDrop = false;
+
+	UFUNCTION()
+		void OnRep_PickUpOrDrop();
 	
 };
