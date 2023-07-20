@@ -98,8 +98,8 @@ public:
 	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
 	FVRCharacterHMDStruct VRCharacterHMDStruct;
 
-	UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
-	bool PickUpOrDrop = false;
+	//UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
+	//bool PickUpOrDrop = false;
 private:
 
 	//Animations
@@ -235,8 +235,8 @@ public:
 	UFUNCTION()
 	void OnRep_VRCharacterHMDStruct();
 
-	UFUNCTION()
-	void OnRep_PickUpOrDrop();
+	//UFUNCTION()
+	//void OnRep_PickUpOrDrop();
 
 	UFUNCTION(Server, unreliable, WithValidation)
 	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);

@@ -1,6 +1,7 @@
 
-#include "Net/UnrealNetwork.h"
 #include "Weapon/Weapon.h"
+#include "Net/UnrealNetwork.h"
+
 
 AWeapon::AWeapon()
 {
@@ -39,6 +40,11 @@ void AWeapon::PickUp(USceneComponent* AttachTo, FName SocketName)
 	WeaponAttachToHandNow = AttachTo;
 
 	SendCountHandAmmoInWeapon(CurrentAmmoCount);
+
+	if (HasAuthority())
+	{
+		PickUpOnServer(AttachTo, SocketName);
+	}
 }
 
 void AWeapon::Drop()
@@ -50,6 +56,7 @@ void AWeapon::Drop()
 	SendCountHandAmmoInWeapon(0);
 
 	WeaponAttachToHandNow = nullptr;
+	
 }
 
 bool AWeapon::AmmoCheck()
@@ -108,11 +115,19 @@ void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetim
 
 void AWeapon::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
 {
-	WeaponAttachToHandNow = AttachTo;
+	//WeaponAttachToHandNow = AttachTo;
 	PickUpOrDrop = true;
 }
 
 void AWeapon::OnRep_PickUpOrDrop()
 {
-	PickUp(WeaponAttachToHandNow, "SocketName");
+	Drop();
+	StaticMesh->SetSimulatePhysics(false);
+	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), CurrentObjectSocketName);
+
+	CharacterRef = AttachTo->GetOwner();
+	WeaponAttachToHandNow = AttachTo;
+
+	SendCountHandAmmoInWeapon(CurrentAmmoCount);
+//	PickUp(WeaponAttachToHandNow, "SocketName");
 }

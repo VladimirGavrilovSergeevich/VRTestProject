@@ -582,20 +582,20 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 	}
 }
 
-void AVRCharacter::OnRep_PickUpOrDrop()
-{
+//void AVRCharacter::OnRep_PickUpOrDrop()
+//{
 	//if (!HasAuthority())
 	//{
 	//	return;
 	//}
 	//AttachedActorLeftHand, HandMeshLeft
-	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-	if (Interface)
-	{
-		Interface->PickUp(HandMeshRight, "None");
+//	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+//	if (Interface)
+//	{
+//		Interface->PickUp(HandMeshRight, "None");
 		//Interface->PickUp(AttachTo,SocketName);
-	}
-}
+//	}
+//}
 
 void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacterHMDStruct HMDStruct)
 {
@@ -609,7 +609,7 @@ bool AVRCharacter::RepVRCharacterHMDStructFromClient_Validate(FVRCharacterHMDStr
 
 void AVRCharacter::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
 {
-	PickUpOrDrop = true;
+//	PickUpOrDrop = true;
 }
 
 bool AVRCharacter::PickUpOnServer_Validate(USceneComponent* AttachTo, FName SocketName)
