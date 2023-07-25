@@ -41,10 +41,11 @@ void AWeapon::PickUp(USceneComponent* AttachTo, FName SocketName)
 
 	SendCountHandAmmoInWeapon(CurrentAmmoCount);
 
-	if (HasAuthority())
-	{
-		PickUpOnServer(AttachTo, SocketName);
-	}
+	PickUpOrDropFromWeapon = true;
+//	if (HasAuthority())
+//	{
+//		PickUpOnServer(AttachTo, SocketName);
+//	}
 }
 
 void AWeapon::Drop()
@@ -116,18 +117,19 @@ void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetim
 void AWeapon::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
 {
 	//WeaponAttachToHandNow = AttachTo;
-	PickUpOrDrop = true;
+//	PickUpOrDrop = true;
 }
 
-void AWeapon::OnRep_PickUpOrDrop()
+void AWeapon::OnRep_PickUpOrDropFromWeapon()
 {
-	Drop();
-	StaticMesh->SetSimulatePhysics(false);
-	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), CurrentObjectSocketName);
+	
+//	Drop();
+//	StaticMesh->SetSimulatePhysics(false);
+//	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), CurrentObjectSocketName);
 
-	CharacterRef = AttachTo->GetOwner();
-	WeaponAttachToHandNow = AttachTo;
+//	CharacterRef = AttachTo->GetOwner();
+//	WeaponAttachToHandNow = AttachTo;
 
-	SendCountHandAmmoInWeapon(CurrentAmmoCount);
-//	PickUp(WeaponAttachToHandNow, "SocketName");
+//	SendCountHandAmmoInWeapon(CurrentAmmoCount);
+	PickUp(WeaponAttachToHandNow, "SocketName");
 }

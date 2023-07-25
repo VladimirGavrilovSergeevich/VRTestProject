@@ -98,8 +98,8 @@ public:
 	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
 	FVRCharacterHMDStruct VRCharacterHMDStruct;
 
-	//UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
-	//bool PickUpOrDrop = false;
+	UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
+	bool PickUpOrDrop = false;
 private:
 
 	//Animations
@@ -193,6 +193,9 @@ public:
 
 	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
 
+	UFUNCTION(Server, unreliable, WithValidation)
+	virtual void PickUpOnServer(USceneComponent* AttachTo, FName SocketName) override;
+
 	//Get
 	UFUNCTION()
 	float GetHealth() const;
@@ -235,15 +238,15 @@ public:
 	UFUNCTION()
 	void OnRep_VRCharacterHMDStruct();
 
-	//UFUNCTION()
-	//void OnRep_PickUpOrDrop();
+	UFUNCTION()
+	void OnRep_PickUpOrDrop();
 
 	UFUNCTION(Server, unreliable, WithValidation)
 	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
 
 	UFUNCTION(Server, unreliable, WithValidation)
-	virtual void PickUpOnServer(USceneComponent* AttachTo, FName SocketName) override;
-
+	void CallPickUpOnServerFromClient(USceneComponent* AttachTo, FName SocketName, AActor* Interface1);
+	//USceneComponent* AttachTo, FName SocketName, IInteractionWithObjects* Interface
 
 
 private:

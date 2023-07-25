@@ -142,6 +142,24 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("TriggerLeftAction", IE_Released, this, &AVRCharacter::TriggerLeftActionReleased);
 }
 
+void AVRCharacter::CallPickUpOnServerFromClient_Implementation(USceneComponent* AttachTo, FName SocketName, AActor* Interface1)
+{
+	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(Interface1);
+	if (Interface)
+	{
+		//if (!HasAuthority())
+		//{
+			Interface->PickUp(AttachTo, SocketName);
+	//	}
+	}
+//	Interface->PickUp(AttachTo, SocketName);
+}
+
+bool AVRCharacter::CallPickUpOnServerFromClient_Validate(USceneComponent* AttachTo, FName SocketName, AActor* Interface1)
+{
+	return true;
+}
+
 void AVRCharacter::GripLeft(float Rate)
 {
 	if (!IsValid(LeftHandAnimInstance))
@@ -430,10 +448,12 @@ void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, U
 	//	{
 			Interface->PickUp(AttachTo,SocketName);
 	//	}
-		//else
-		//{
-		//	Interface->PickUpOnServer(AttachTo, SocketName);
-		//}
+	//	else
+	//	{
+			CallPickUpOnServerFromClient(AttachTo, SocketName, AttachedActorInHand);
+			//CallPickUpOnServerFromClient(AttachTo,SocketName, Interface);
+			//Interface->PickUpOnServer(AttachTo, SocketName);
+	//	}
 		//Interface->PickUpOnServer(AttachTo,SocketName);
 		//Interface->PickUp(AttachTo,SocketName);
 	}
@@ -582,8 +602,8 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 	}
 }
 
-//void AVRCharacter::OnRep_PickUpOrDrop()
-//{
+void AVRCharacter::OnRep_PickUpOrDrop()
+{
 	//if (!HasAuthority())
 	//{
 	//	return;
@@ -595,7 +615,7 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 //		Interface->PickUp(HandMeshRight, "None");
 		//Interface->PickUp(AttachTo,SocketName);
 //	}
-//}
+}
 
 void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacterHMDStruct HMDStruct)
 {

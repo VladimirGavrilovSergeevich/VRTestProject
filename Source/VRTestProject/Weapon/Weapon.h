@@ -73,10 +73,10 @@ public:
 
 	virtual void PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName) override;
 
-	UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
-		bool PickUpOrDrop = false;
+	UPROPERTY(replicatedUsing = OnRep_PickUpOrDropFromWeapon)
+		bool PickUpOrDropFromWeapon = false;
 
 	UFUNCTION()
-		void OnRep_PickUpOrDrop();
+		void OnRep_PickUpOrDropFromWeapon();
 	
 };
