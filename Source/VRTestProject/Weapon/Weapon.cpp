@@ -16,8 +16,6 @@ AWeapon::AWeapon()
 	CollisionMesh->SetupAttachment(StaticMesh);
 
 	CollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnOverlapBegin);
-
-	bReplicates = true;
 }
 
 void AWeapon::BeginPlay()
@@ -41,7 +39,7 @@ void AWeapon::PickUp(USceneComponent* AttachTo, FName SocketName)
 
 	SendCountHandAmmoInWeapon(CurrentAmmoCount);
 
-	PickUpOrDropFromWeapon = true;
+	//PickUpOrDropFromWeapon = true;
 //	if (HasAuthority())
 //	{
 //		PickUpOnServer(AttachTo, SocketName);
@@ -106,13 +104,13 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 }
 
-void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	//DOREPLIFETIME_CONDITION(AVRCharacter, VRCharacterHMDStruct, COND_SkipOwner);
-	DOREPLIFETIME(AWeapon, StaticMesh);
-}
+//	DOREPLIFETIME(AWeapon, StaticMesh);
+//}
 
 void AWeapon::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
 {
@@ -120,8 +118,8 @@ void AWeapon::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName Soc
 //	PickUpOrDrop = true;
 }
 
-void AWeapon::OnRep_PickUpOrDropFromWeapon()
-{
+//void AWeapon::OnRep_PickUpOrDropFromWeapon()
+//{
 	
 //	Drop();
 //	StaticMesh->SetSimulatePhysics(false);
@@ -131,5 +129,5 @@ void AWeapon::OnRep_PickUpOrDropFromWeapon()
 //	WeaponAttachToHandNow = AttachTo;
 
 //	SendCountHandAmmoInWeapon(CurrentAmmoCount);
-	PickUp(WeaponAttachToHandNow, "SocketName");
-}
+//	PickUp(WeaponAttachToHandNow, "SocketName");
+//}

@@ -65,7 +65,8 @@ void AVRCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AVRCharacter, VRCharacterHMDStruct, COND_SkipOwner);
+	//DOREPLIFETIME_CONDITION(AVRCharacter, VRCharacterHMDStruct, COND_SkipOwner);
+	DOREPLIFETIME(AVRCharacter, VRCharacterHMDStruct);
 	DOREPLIFETIME(AVRCharacter, HandMeshRight);
 	DOREPLIFETIME(AVRCharacter, HandMeshLeft);
 }
@@ -103,8 +104,8 @@ void AVRCharacter::Tick(float DeltaTime)
 	UpdateSplineMesh(SplineComponentRight, SplineMeshComponentRight);
 	UpdateSplineMesh(SplineComponentLeft, SplineMeshComponentLeft);
 	///
-	if (!HasAuthority())
-	{
+//	if (!HasAuthority())
+	//{
 		FVRCharacterHMDStruct HMDTempStruct;
 		HMDTempStruct.MotionControllerRightLocalLocation = MotionControllerRight->GetRelativeLocation();
 		HMDTempStruct.MotionControllerRightLocalRotation = MotionControllerRight->GetRelativeRotation();
@@ -119,7 +120,7 @@ void AVRCharacter::Tick(float DeltaTime)
 		HMDTempStruct.VRCamera = VRCamera;
 
 		RepVRCharacterHMDStructFromClient(HMDTempStruct);
-	}
+	//}
 }
 
 void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -142,33 +143,168 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("TriggerLeftAction", IE_Released, this, &AVRCharacter::TriggerLeftActionReleased);
 }
 
-void AVRCharacter::CallPickUpOnServerFromClient_Implementation(USceneComponent* AttachTo, FName SocketName, AActor* Interface1)
+void AVRCharacter::CallPickUpOnServerFromClient_Implementation(USceneComponent* AttachTo, FName SocketName, AActor* AttachedActorInHand)
 {
-	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(Interface1);
+	//Drop();
+	/////AttachedActorInHand->DisableComponentsSimulatePhysics();
+	//AttachedActorInHand->SetSimulatePhysics(false);
+	/////AttachedActorInHand->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "PistolSocket");
+	/////TestAttachedActorLeftHand = AttachedActorInHand;
+	//CharacterRef = AttachTo->GetOwner();
+	//WeaponAttachToHandNow = AttachTo;
+
+	//SendCountHandAmmoInWeapon(CurrentAmmoCount);
+	////////////////
+	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorInHand);
 	if (Interface)
 	{
 		//if (!HasAuthority())
 		//{
 			Interface->PickUp(AttachTo, SocketName);
+			this->AttachedActorLeftHand = AttachedActorInHand;
+	}
 	//	}
 	}
 //	Interface->PickUp(AttachTo, SocketName);
-}
+	
 
 bool AVRCharacter::CallPickUpOnServerFromClient_Validate(USceneComponent* AttachTo, FName SocketName, AActor* Interface1)
 {
 	return true;
 }
 
+void AVRCharacter::CallDropOnServerFromClient_Implementation()
+{
+	//TestAttachedActorLeftHand->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+	//TestAttachedActorLeftHand->drop()
+	//PickUpOrDrop = true;
+	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+	if (Interface)
+	{
+		Interface->Drop();
+	//	AttachedActorLeftHand = nullptr;
+	}
+}
+
+bool AVRCharacter::CallDropOnServerFromClient_Validate()
+{
+	return true;
+}
+
+void AVRCharacter::TestGripLeftServerFunction_Implementation(float GripRate)
+{
+	if (GripRate > 0.5f)
+	{
+		if (!CanTryGrabLeft)
+		{
+			return;
+		}
+		CanTryGrabLeft = false;
+		if (AttachedActorLeftHand != nullptr)
+		{
+			return;
+		}
+		AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
+		if (AttachedActorLeftHand == nullptr)
+		{
+			return;
+		}
+		CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
+		if (AttachedActorRightHand == AttachedActorLeftHand)
+		{
+			AttachedActorRightHand = nullptr;
+		}
+	}
+	else
+	{
+		CanTryGrabLeft = true;
+
+		if (AttachedActorLeftHand == nullptr)
+		{
+			return;
+		}
+		if (WeaponDropDelay)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+		if (Interface)
+		{
+			//CallDropOnServerFromClient();
+				Interface->Drop();
+
+				AttachedActorLeftHand = nullptr;
+		}
+
+	}
+}
+
+bool AVRCharacter::TestGripLeftServerFunction_Validate(float GripRate)
+{
+	return true;
+}
+
+void AVRCharacter::TestGripRightServerFunction_Implementation(float GripRate)
+{
+	if (GripRate > 0.5f)
+	{
+		if (!CanTryGrabRight)
+		{
+			return;
+		}
+		CanTryGrabRight = false;
+		if (AttachedActorRightHand != nullptr)
+		{
+			return;
+		}
+		AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
+		if (AttachedActorRightHand == nullptr)
+		{
+			return;
+		}
+		CheckAndCallPickUpViaInterface(AttachedActorRightHand, HandMeshRight, "None");
+		if (AttachedActorRightHand == AttachedActorLeftHand)
+		{
+			AttachedActorLeftHand = nullptr;
+		}
+	}
+	else
+	{
+		CanTryGrabRight = true;
+
+		if (AttachedActorRightHand == nullptr)
+		{
+			return;
+		}
+		if (WeaponDropDelay)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+		if (Interface)
+		{
+			//CallDropOnServerFromClient();
+			Interface->Drop();
+			AttachedActorRightHand = nullptr;
+		}
+
+
+	}
+}
+bool AVRCharacter::TestGripRightServerFunction_Validate(float GripRate)
+{
+	return true;
+}
 void AVRCharacter::GripLeft(float Rate)
 {
 	if (!IsValid(LeftHandAnimInstance))
 	{
 		return;
 	}
-
+	
 	LeftHandAnimInstance->Grip = Rate;
-
+	TestGripLeftServerFunction(Rate);
+	/*
 	if (LeftHandAnimInstance->Grip > 0.5f)
 	{
 		if (!CanTryGrabLeft)
@@ -206,10 +342,13 @@ void AVRCharacter::GripLeft(float Rate)
 		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
 		if (Interface)
 		{
-			Interface->Drop();
-			AttachedActorLeftHand = nullptr;
+			CallDropOnServerFromClient();
+		//	Interface->Drop();
+			
+		//	AttachedActorLeftHand = nullptr;
 		}
-	}
+		
+	}*/
 }
 
 void AVRCharacter::GripRight(float Rate)
@@ -220,7 +359,8 @@ void AVRCharacter::GripRight(float Rate)
 	}
     RightHandAnimInstance->Grip = Rate;
 
-	if (RightHandAnimInstance->Grip > 0.5f)
+	TestGripRightServerFunction(Rate);
+	/*if (RightHandAnimInstance->Grip > 0.5f)
 	{
 		if (!CanTryGrabRight)
 		{
@@ -257,10 +397,13 @@ void AVRCharacter::GripRight(float Rate)
 		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
 		if (Interface)
 		{
+			CallDropOnServerFromClient();
 			Interface->Drop();
 			AttachedActorRightHand = nullptr;
 		}
-	}
+		
+
+	}*/
 }
 
 void AVRCharacter::TriggerLeft(float Rate)
@@ -450,7 +593,7 @@ void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, U
 	//	}
 	//	else
 	//	{
-			CallPickUpOnServerFromClient(AttachTo, SocketName, AttachedActorInHand);
+			////////CallPickUpOnServerFromClient(AttachTo, SocketName, AttachedActorInHand);
 			//CallPickUpOnServerFromClient(AttachTo,SocketName, Interface);
 			//Interface->PickUpOnServer(AttachTo, SocketName);
 	//	}
@@ -581,10 +724,10 @@ void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalIm
 
 void AVRCharacter::OnRep_VRCharacterHMDStruct()
 {
-	if (HasAuthority())
-	{
-		return;
-	}
+	//if (HasAuthority())
+	//{
+	//	return;
+	//}
 	if (IsValid(MotionControllerRight))
 	{
 		MotionControllerRight->SetRelativeLocation(VRCharacterHMDStruct.MotionControllerRightLocalLocation);
@@ -604,6 +747,26 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 
 void AVRCharacter::OnRep_PickUpOrDrop()
 {
+//	TestAttachedActorLeftHand->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+
+	//AttachedActorLeftHand->
+	//AttachedActorInHand->SetSimulatePhysics(false);
+	//AttachedActorLeftHand->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "PistolSocket");
+
+	//IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+	//if (Interface)
+	//{
+	//	Interface->Drop();
+	//	AttachedActorLeftHand = nullptr;
+	//}
+	//StopFire();
+	//DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
+	//StaticMesh->SetSimulatePhysics(true);
+
+	//SendCountHandAmmoInWeapon(0);
+
+	//WeaponAttachToHandNow = nullptr;
+//	CallDropOnServerFromClient();
 	//if (!HasAuthority())
 	//{
 	//	return;
@@ -619,6 +782,7 @@ void AVRCharacter::OnRep_PickUpOrDrop()
 
 void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacterHMDStruct HMDStruct)
 {
+	OnRep_VRCharacterHMDStruct();
 	VRCharacterHMDStruct = HMDStruct;
 }
 

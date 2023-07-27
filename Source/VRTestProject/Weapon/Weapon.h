@@ -69,14 +69,14 @@ public:
 	UFUNCTION()
 	void SendCountHandAmmoInWeapon(int32 CurrentAmmoCountInWeapon);
 
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+//	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName) override;
 
-	UPROPERTY(replicatedUsing = OnRep_PickUpOrDropFromWeapon)
-		bool PickUpOrDropFromWeapon = false;
+	//UPROPERTY(replicatedUsing = OnRep_PickUpOrDropFromWeapon)
+	//	bool PickUpOrDropFromWeapon = false;
 
-	UFUNCTION()
-		void OnRep_PickUpOrDropFromWeapon();
+	//UFUNCTION()
+	//	void OnRep_PickUpOrDropFromWeapon();
 	
 };

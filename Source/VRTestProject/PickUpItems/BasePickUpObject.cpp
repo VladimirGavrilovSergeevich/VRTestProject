@@ -5,6 +5,9 @@
 ABasePickUpObject::ABasePickUpObject()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	bReplicates = true;
+	SetReplicateMovement(true);
 }
 
 

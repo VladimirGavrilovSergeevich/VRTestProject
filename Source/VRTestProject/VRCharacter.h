@@ -114,6 +114,9 @@ private:
 	AActor* AttachedActorLeftHand;
 
 	UPROPERTY()
+	AActor* TestAttachedActorLeftHand;
+
+	UPROPERTY()
 	AActor* AttachedActorRightHand;
 
 	//Inputs
@@ -244,9 +247,17 @@ public:
 	UFUNCTION(Server, unreliable, WithValidation)
 	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
 
-	UFUNCTION(Server, unreliable, WithValidation)
-	void CallPickUpOnServerFromClient(USceneComponent* AttachTo, FName SocketName, AActor* Interface1);
-	//USceneComponent* AttachTo, FName SocketName, IInteractionWithObjects* Interface
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallPickUpOnServerFromClient(USceneComponent* AttachTo, FName SocketName, AActor* AttachedActorInHand);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallDropOnServerFromClient();
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void TestGripLeftServerFunction(float GripRate);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void TestGripRightServerFunction(float GripRate);
 
 
 private:

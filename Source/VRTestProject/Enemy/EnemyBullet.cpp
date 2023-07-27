@@ -8,6 +8,9 @@ AEnemyBullet::AEnemyBullet()
 	PrimaryActorTick.bCanEverTick = false;
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
+
+	bReplicates = true;
+	SetReplicateMovement(true);
 }
 
 void AEnemyBullet::BeginPlay()
