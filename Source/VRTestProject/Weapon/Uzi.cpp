@@ -5,7 +5,7 @@
 AUzi::AUzi()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.UpdateTickIntervalAndCoolDown(0.05);
+	PrimaryActorTick.UpdateTickIntervalAndCoolDown(0.2);
 	CurrentObjectSocketName = "UziSocket";
 	MaxAmmoCount = 100;
     CurrentAmmoCount = MaxAmmoCount;

@@ -2,6 +2,7 @@
 #include "Widget/SpawnWeapons.h"
 #include "Managers/SpawnManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "PlayerController/VRTestProjectPlayerController.h"
 
 void USpawnWeapons::NativeOnInitialized()
 {
@@ -9,6 +10,7 @@ void USpawnWeapons::NativeOnInitialized()
 	if (SpawnWeaponPistolButton && SpawnWeaponUziButton)
 	{
 		SpawnWeaponPistolButton->OnReleased.AddDynamic(this, &USpawnWeapons::SpawnPistolWeapon);
+		//SpawnWeaponPistolButton->OnReleased.AddDynamic(this, &USpawnWeapons::TestSpawnPistolWeaponFromCharacter);
 
 		SpawnWeaponUziButton->OnReleased.AddDynamic(this, &USpawnWeapons::SpawnUziWeapon);
 	}
@@ -16,18 +18,48 @@ void USpawnWeapons::NativeOnInitialized()
 
 void USpawnWeapons::SpawnPistolWeapon()
 {
-	auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-	if (SpawnManager)
+	auto CurrentPlayerController = Cast<AVRTestProjectPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (CurrentPlayerController)
 	{
-		SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Pistol);
+		CurrentPlayerController->CallSpawnPistolWeaponOnServerFromPlayerController();
 	}
+	//auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
+	//if (SpawnManager)
+	//{
+	//	SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Pistol);
+	//}
 }
 
 void USpawnWeapons::SpawnUziWeapon()
 {
-	auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-	if (SpawnManager)
+	auto CurrentPlayerController = Cast<AVRTestProjectPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	if (CurrentPlayerController)
 	{
-		SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Uzi);
+		CurrentPlayerController->CallSpawnUziWeaponOnServerFromPlayerController();
 	}
+
+	//auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
+	//if (SpawnManager)
+	//{
+	//	SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Uzi);
+	//}
 }
+
+//void USpawnWeapons::TestSpawnPistolWeaponFromCharacter()
+//{
+//	auto CurrentPlayerController = Cast<AVRTestProjectPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//if (CurrentPlayerController)
+//	{
+//		CurrentPlayerController->CallSpawnPistolWeaponOnServerFromPlayerController();
+//	}
+//}
+
+//void USpawnWeapons::CallSpawnPistolWeaponOnServerFromClient_Implementation()
+//{
+//	SpawnPistolWeapon();
+//}
+
+//bool USpawnWeapons::CallSpawnPistolWeaponOnServerFromClient_Validate()
+//{
+//	return true;
+//}

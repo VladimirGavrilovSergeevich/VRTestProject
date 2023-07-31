@@ -32,4 +32,13 @@ private:
 
 	UFUNCTION()
 	void SpawnUziWeapon();
+
+	//UFUNCTION()
+	//void SpawnPistolWeaponFromCharacter();
+
+	//UFUNCTION()
+	//void TestSpawnUziWeaponFromCharacter();
+
+//	UFUNCTION(Server, reliable, WithValidation)
+//	void CallSpawnPistolWeaponOnServerFromClient();
 };

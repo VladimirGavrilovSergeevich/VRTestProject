@@ -295,6 +295,101 @@ bool AVRCharacter::TestGripRightServerFunction_Validate(float GripRate)
 {
 	return true;
 }
+void AVRCharacter::CallDoFireAndStopFireOnServerFromClientForLeftHand_Implementation(float TriggerValue)
+{
+	DoFireAndStopFire(TriggerValue, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft, LeftHandPointingAtWidget);
+/*	if (LeftHandPointingAtWidget)
+	{
+		return;
+	}
+	if (TriggerValue > 0.5f)
+	{
+		if (!CanTryTriggerLeft)
+		{
+			return;
+		}
+		CanTryTriggerLeft = false;
+		if (AttachedActorLeftHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+		if (Interface)
+		{
+			Interface->Fire();
+			CanTryTriggerLeft = false;
+			CanTryStopFireLeft = true;
+			return;
+		}
+	}
+	else
+	{
+		CanTryTriggerLeft = true;
+		if (!CanTryStopFireLeft || AttachedActorLeftHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
+		if (Interface)
+		{
+			Interface->StopFire();
+			CanTryStopFireLeft = false;
+		}
+	}*/
+}
+
+bool AVRCharacter::CallDoFireAndStopFireOnServerFromClientForLeftHand_Validate(float TriggerValue)
+{
+	return true;
+}
+
+void AVRCharacter::CallDoFireAndStopFireOnServerFromClientForRightHand_Implementation(float TriggerValue)
+{
+	DoFireAndStopFire(TriggerValue, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
+/*	if (RightHandPointingAtWidget)
+	{
+		return;
+	}
+	if (TriggerValue > 0.5f)
+	{
+		if (!CanTryTriggerRight)
+		{
+			return;
+		}
+		CanTryTriggerRight = false;
+		if (AttachedActorRightHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+		if (Interface)
+		{
+			Interface->Fire();
+			CanTryTriggerRight = false;
+			CanTryStopFireRight = true;
+			return;
+		}
+	}
+	else
+	{
+		CanTryTriggerRight = true;
+		if (!CanTryStopFireRight || AttachedActorRightHand == nullptr)
+		{
+			return;
+		}
+		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
+		if (Interface)
+		{
+			Interface->StopFire();
+			CanTryStopFireRight = false;
+		}
+	}*/
+}
+
+bool AVRCharacter::CallDoFireAndStopFireOnServerFromClientForRightHand_Validate(float TriggerValue)
+{
+	return true;
+}
 void AVRCharacter::GripLeft(float Rate)
 {
 	if (!IsValid(LeftHandAnimInstance))
@@ -413,7 +508,8 @@ void AVRCharacter::TriggerLeft(float Rate)
 		return;
 	}
     LeftHandAnimInstance->Trigger = Rate;
-	DoFireAndStopFire(LeftHandAnimInstance->Trigger, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft, LeftHandPointingAtWidget);
+	CallDoFireAndStopFireOnServerFromClientForLeftHand(LeftHandAnimInstance->Trigger);
+	//DoFireAndStopFire(LeftHandAnimInstance->Trigger, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft, LeftHandPointingAtWidget);
 }
 
 void AVRCharacter::TriggerRight(float Rate)
@@ -423,7 +519,8 @@ void AVRCharacter::TriggerRight(float Rate)
 		return;
 	}
 	RightHandAnimInstance->Trigger = Rate;
-	DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
+	CallDoFireAndStopFireOnServerFromClientForRightHand(RightHandAnimInstance->Trigger);
+//	DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
 }
 
 void AVRCharacter::MoveForward(float Value)

@@ -101,6 +101,7 @@ public:
 	UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
 	bool PickUpOrDrop = false;
 private:
+//public:
 
 	//Animations
 	UPROPERTY()
@@ -258,6 +259,13 @@ public:
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void TestGripRightServerFunction(float GripRate);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallDoFireAndStopFireOnServerFromClientForLeftHand(float TriggerValue);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallDoFireAndStopFireOnServerFromClientForRightHand(float TriggerValue);
+	//float TriggerValue, bool& CanTryTrigger, AActor* AttachedActorHand, bool& CanTryStopFire, bool& HandPointingAtWidget
 
 
 private:
