@@ -38,12 +38,6 @@ void AWeapon::PickUp(USceneComponent* AttachTo, FName SocketName)
 	WeaponAttachToHandNow = AttachTo;
 
 	SendCountHandAmmoInWeapon(CurrentAmmoCount);
-
-	//PickUpOrDropFromWeapon = true;
-//	if (HasAuthority())
-//	{
-//		PickUpOnServer(AttachTo, SocketName);
-//	}
 }
 
 void AWeapon::Drop()
@@ -54,8 +48,7 @@ void AWeapon::Drop()
 
 	SendCountHandAmmoInWeapon(0);
 
-	WeaponAttachToHandNow = nullptr;
-	
+	WeaponAttachToHandNow = nullptr;	
 }
 
 bool AWeapon::AmmoCheck()
@@ -101,33 +94,6 @@ void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 
 		SendCountHandAmmoInWeapon(CurrentAmmoCount);
 	}
-
 }
 
-//void AWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
-//{
-//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME_CONDITION(AVRCharacter, VRCharacterHMDStruct, COND_SkipOwner);
-//	DOREPLIFETIME(AWeapon, StaticMesh);
-//}
-
-void AWeapon::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
-{
-	//WeaponAttachToHandNow = AttachTo;
-//	PickUpOrDrop = true;
-}
-
-//void AWeapon::OnRep_PickUpOrDropFromWeapon()
-//{
-	
-//	Drop();
-//	StaticMesh->SetSimulatePhysics(false);
-//	StaticMesh->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), CurrentObjectSocketName);
-
-//	CharacterRef = AttachTo->GetOwner();
-//	WeaponAttachToHandNow = AttachTo;
-
-//	SendCountHandAmmoInWeapon(CurrentAmmoCount);
-//	PickUp(WeaponAttachToHandNow, "SocketName");
-//}

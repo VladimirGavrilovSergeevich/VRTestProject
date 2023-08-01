@@ -18,13 +18,6 @@ public:
 
 	AThorHammer();
 
-private:
-	bool HammerFly = false;
-
-	FVector StartActorLocation;
-
-	USceneComponent* AttachToLocal;
-public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
@@ -37,4 +30,11 @@ public:
 
 	virtual void StopFire() override;
 
+private:
+	bool HammerFly = false;
+
+	FVector StartActorLocation;
+
+	UPROPERTY()
+	USceneComponent* AttachToLocal;
 };

@@ -57,6 +57,81 @@ class VRTESTPROJECT_API AVRCharacter : public ACharacter, public IInteractionWit
 public:
 
 	AVRCharacter();
+
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	//Interfaces IInteractionWithObjects
+	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
+
+	virtual void Drop() override;
+
+	virtual void Fire() override;
+
+	virtual void StopFire() override;
+
+	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
+
+	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
+
+	//Get
+	UFUNCTION()
+	float GetHealth() const;
+
+	UFUNCTION()
+	float GetMaxHealth() const;
+
+	UFUNCTION()
+	int32 GetLeftHandCurrentAmmoCountInWeapon();
+
+	UFUNCTION()
+	int32 GetRightHandCurrentAmmoCountInWeapon();
+
+	UFUNCTION()
+	AActor* GetAttachedActorLeftHand();
+
+	UFUNCTION()
+	AActor* GetAttachedActorRightHand();
+
+	UFUNCTION(BlueprintCallable, Category = "GrabItem")
+	AActor* GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh);
+
+	//Spline WidgetInteract
+	UFUNCTION()
+	void UpdateSplineMesh(USplineComponent* SplineComponent, USplineMeshComponent* SplineMeshComponent);
+
+	UFUNCTION()
+	void SplineConstructionToWidget(UWidgetInteractionComponent* WidgetInteractionComponent, USplineComponent* SplineComponent, bool& HandPointingAtWidget);
+
+	//replication
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	void OnRep_VRCharacterHMDStruct();
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallPickUpOrDropOnServerFromClientForLeftHand(float GripRate);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallPickUpOrDropOnServerFromClientForRightHand(float GripRate);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallDoFireAndStopFireOnServerFromClientForLeftHand(float TriggerValue);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallDoFireAndStopFireOnServerFromClientForRightHand(float TriggerValue);
+
+	//
+	UFUNCTION(BlueprintCallable, Category = "Interface")
+	void CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, USceneComponent* AttachTo, FName SocketName);
+
+	UFUNCTION()
+	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
 	//AddCharacterComponents
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UCameraComponent* VRCamera;
@@ -95,166 +170,15 @@ public:
 	USplineMeshComponent* SplineMeshComponentLeft;
 	//EndAddCharacterComponents
 
+	//replication
 	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
 	FVRCharacterHMDStruct VRCharacterHMDStruct;
-
-private:
-//public:
-
-	//Animations
-	UPROPERTY()
-	UHandAnimInstance* LeftHandAnimInstance;
-
-	UPROPERTY()
-	UHandAnimInstance* RightHandAnimInstance;
-
-	//PickUps
-	UPROPERTY()
-	AActor* AttachedActorLeftHand;
-
-	UPROPERTY()
-	AActor* TestAttachedActorLeftHand;
-
-	UPROPERTY()
-	AActor* AttachedActorRightHand;
-
-	//Inputs
-	UPROPERTY()
-	bool CanCharacterRotation = false;
-
-	UPROPERTY()
-	float MinRateForCharacterRotation = 0.3f;
-
-	UPROPERTY()
-	bool CanTryGrabLeft = true;
-
-	UPROPERTY()
-	bool CanTryGrabRight = true;
-
-	UPROPERTY()
-	bool CanTryTriggerRight = true;
-
-	UPROPERTY()
-	bool CanTryTriggerLeft = true;
-
-	UPROPERTY()
-	bool CanTryStopFireRight = false;
-
-	UPROPERTY()
-	bool CanTryStopFireLeft = false;
-
-	//Health
-	UPROPERTY()
-	float MaxHealth = 100;
-
-	UPROPERTY()
-	float Health;
-
-	//Widgets
-	UPROPERTY()
-	bool RightHandPointingAtWidget = false;
-
-	UPROPERTY()
-	bool LeftHandPointingAtWidget = false;
-
-	//Weapon
-	UPROPERTY()
-	bool WeaponDropDelay = true;
-
-	UPROPERTY()
-	int32 LeftHandCurrentAmmoCountInWeapon = 0;
-
-	UPROPERTY()
-	int32 RightHandCurrentAmmoCountInWeapon = 0;
-
-
-	UPROPERTY()
-	FTimerHandle FTimerHandleWasTransitionBetweenLevels;
-
-	UPROPERTY()
-	UVRTestProjectGameInstance* CurrentGameInstance;
 
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
-
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	//Interfaces
-	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
-
-	virtual void Drop() override;
-
-	virtual void Fire() override;
-
-	virtual void StopFire() override;
-
-	virtual void LeftHandAmmoInWeapon(int32 AmmoCount) override;
-
-	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
-
-	virtual void PickUpOnServer(USceneComponent* AttachTo, FName SocketName) override;
-
-	//Get
-	UFUNCTION()
-	float GetHealth() const;
-
-	UFUNCTION()
-	float GetMaxHealth() const;
-
-	UFUNCTION()
-	int32 GetLeftHandCurrentAmmoCountInWeapon();
-
-	UFUNCTION()
-	int32 GetRightHandCurrentAmmoCountInWeapon();
-
-	UFUNCTION()
-	AActor* GetAttachedActorLeftHand();
-
-	UFUNCTION()
-	AActor* GetAttachedActorRightHand();
-
-	UFUNCTION(BlueprintCallable, Category = "GrabItem")
-	AActor* GetGrabItemNearMotionController(UMotionControllerComponent* MotionController, USkeletalMeshComponent* HandMesh);
-
-	//Spline
-	UFUNCTION()
-	void UpdateSplineMesh(USplineComponent* SplineComponent, USplineMeshComponent* SplineMeshComponent);
-
-	UFUNCTION()
-	void SplineConstructionToWidget(UWidgetInteractionComponent* WidgetInteractionComponent, USplineComponent* SplineComponent, bool &HandPointingAtWidget);
-
-	//
-	UFUNCTION(BlueprintCallable, Category = "Interface")
-	void CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, USceneComponent* AttachTo, FName SocketName);
-
-	UFUNCTION()
-	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
-
-
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	UFUNCTION()
-	void OnRep_VRCharacterHMDStruct();
-
-	UFUNCTION(Server, unreliable, WithValidation)
-	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
-
-	UFUNCTION(Server, reliable, WithValidation)
-	void CallPickUpOrDropOnServerFromClientForLeftHand(float GripRate);
-
-	UFUNCTION(Server, reliable, WithValidation)
-	void CallPickUpOrDropOnServerFromClientForRightHand(float GripRate);
-
-	UFUNCTION(Server, reliable, WithValidation)
-	void CallDoFireAndStopFireOnServerFromClientForLeftHand(float TriggerValue);
-
-	UFUNCTION(Server, reliable, WithValidation)
-	void CallDoFireAndStopFireOnServerFromClientForRightHand(float TriggerValue);
-
 private:
+
 	//Input Hand
 	UFUNCTION()
 	void GripLeft(float Rate);
@@ -293,22 +217,80 @@ private:
 
 	//Input Fire or Widget
 	UFUNCTION()
-	void DoFireAndStopFire(float &TriggerValue, bool &CanTryTrigger, AActor* AttachedActorHand, bool &CanTryStopFire, bool &HandPointingAtWidget);
+	void DoFireAndStopFire(float& TriggerValue, bool& CanTryTrigger, AActor* AttachedActorHand, bool& CanTryStopFire, bool& HandPointingAtWidget);
 
 	UFUNCTION()
 	void ChooseToPressButtonOrShoot();
 
 
 	UFUNCTION()
-	void DoPressButtonOnWidget(float& TriggerValue , bool& CanTryTrigger);
+	void DoPressButtonOnWidget(float& TriggerValue, bool& CanTryTrigger);
 
 	//SpawnCharacter
 	UFUNCTION()
-	void SpawnWeaponInHand(AActor* AttachedActorInHand, TEnumAsByte<LastWeaponInHand> &LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef);
+	void SpawnWeaponInHand(AActor* AttachedActorInHand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef);
 
 	UFUNCTION()
 	void DeadCharacter();
 
 	UFUNCTION()
 	void SetWasTransitionBetweenLevels();
+
+	//Animations
+	UPROPERTY()
+	UHandAnimInstance* LeftHandAnimInstance;
+
+	UPROPERTY()
+	UHandAnimInstance* RightHandAnimInstance;
+
+	//PickUps
+	UPROPERTY()
+	AActor* AttachedActorLeftHand;
+
+	UPROPERTY()
+	AActor* TestAttachedActorLeftHand;
+
+	UPROPERTY()
+	AActor* AttachedActorRightHand;
+
+	//Inputs
+	bool CanCharacterRotation = false;
+
+	const float MinRateForCharacterRotation = 0.3f;
+
+	bool CanTryGrabLeft = true;
+
+	bool CanTryGrabRight = true;
+
+	bool CanTryTriggerRight = true;
+
+	bool CanTryTriggerLeft = true;
+
+	bool CanTryStopFireRight = false;
+
+	bool CanTryStopFireLeft = false;
+
+	//Health
+	const float MaxHealth = 100;
+
+	float Health;
+
+	//Widgets
+	bool RightHandPointingAtWidget = false;
+
+	bool LeftHandPointingAtWidget = false;
+
+	//Weapon
+	bool WeaponDropDelay = true;
+
+	int32 LeftHandCurrentAmmoCountInWeapon = 0;
+
+	int32 RightHandCurrentAmmoCountInWeapon = 0;
+
+	//
+	UPROPERTY()
+	FTimerHandle FTimerHandleWasTransitionBetweenLevels;
+
+	UPROPERTY()
+	UVRTestProjectGameInstance* CurrentGameInstance;
 };

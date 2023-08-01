@@ -15,6 +15,24 @@ public:
 
 	AWeapon();
 
+	virtual void Tick(float DeltaTime) override;
+
+	//Interfaces
+	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
+
+	virtual void Drop() override;
+
+
+	UFUNCTION()
+	bool AmmoCheck();
+
+	UFUNCTION()
+	void LoadAmmoIntoWeapon();
+
+	UFUNCTION()
+	void SendCountHandAmmoInWeapon(int32 CurrentAmmoCountInWeapon);
+
+	//AddWeaponComponents
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh;
 
@@ -23,6 +41,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Meshes")
 	UBoxComponent* CollisionMesh;
+	//
 
 	UPROPERTY(EditDefaultsOnly, Category = "Socket")
 	FName CurrentObjectSocketName;
@@ -49,33 +68,4 @@ protected:
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-public:	
-
-	virtual void Tick(float DeltaTime) override;
-
-	//Interfaces
-	virtual void PickUp(USceneComponent* AttachTo, FName SocketName) override;
-
-	virtual void Drop() override;
-
-
-	UFUNCTION()
-	bool AmmoCheck();
-
-	UFUNCTION()
-	void LoadAmmoIntoWeapon();
-
-	UFUNCTION()
-	void SendCountHandAmmoInWeapon(int32 CurrentAmmoCountInWeapon);
-
-
-	virtual void PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName) override;
-
-	//UPROPERTY(replicatedUsing = OnRep_PickUpOrDropFromWeapon)
-	//	bool PickUpOrDropFromWeapon = false;
-
-	//UFUNCTION()
-	//	void OnRep_PickUpOrDropFromWeapon();
-	
 };

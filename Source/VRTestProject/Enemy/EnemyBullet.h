@@ -14,11 +14,13 @@ class VRTESTPROJECT_API AEnemyBullet : public AActor
 public:	
 	AEnemyBullet();
 
+	virtual void Tick(float DeltaTime) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Meshes")
-		UStaticMeshComponent* StaticMesh;
+	UStaticMeshComponent* StaticMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MovementComponent")
-		UProjectileMovementComponent* ProjectileMovementComponent;
+	UProjectileMovementComponent* ProjectileMovementComponent;
 
 	UPROPERTY()
 	FTimerHandle FTimerHandleDestroy;
@@ -27,8 +29,4 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void BulletDestroy();
-
-public:	
-	virtual void Tick(float DeltaTime) override;
-
 };

@@ -5,12 +5,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Enemy/EnemyBullet.h"
-
-//#include "engine.h"
 #include "Net/UnrealNetwork.h"
-
-//#include "Components/SceneComponent.h"
-
 #include "Managers/SpawnManager.h"
 
 AVRCharacter::AVRCharacter() :
@@ -619,10 +614,6 @@ void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacter
 bool AVRCharacter::RepVRCharacterHMDStructFromClient_Validate(FVRCharacterHMDStruct HMDStruct)
 {
 	return true;
-}
-
-void AVRCharacter::PickUpOnServer(USceneComponent* AttachTo, FName SocketName)
-{
 }
 
 

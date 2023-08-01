@@ -28,6 +28,5 @@ void AEnemyBullet::BulletDestroy()
 void AEnemyBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

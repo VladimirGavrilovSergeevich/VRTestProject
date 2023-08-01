@@ -17,6 +17,11 @@ class VRTESTPROJECT_API AEnemyRhombus : public ATrainingTarget
 public:
 	AEnemyRhombus();
 
+	UFUNCTION()
+	virtual void Fire();
+
+	virtual void Tick(float DeltaTime) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh6;
 
@@ -42,6 +47,12 @@ public:
 	UPROPERTY()
 	AVRCharacter* CharacterRef = nullptr;
 
+protected:
+
+	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit) override;
+
+	virtual void BeginPlay() override;
+
 private:
 	UPROPERTY()
 	FTimerHandle FTimerHandleColorChangeToCalmMuzzle;
@@ -57,17 +68,4 @@ private:
 
 	UFUNCTION()
 	void StopFire();
-
-public:
-
-	UFUNCTION()
-	virtual void Fire();
-
-	virtual void Tick(float DeltaTime) override;
-	
-protected:
-
-	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit) override;
-
-	virtual void BeginPlay() override;
 };

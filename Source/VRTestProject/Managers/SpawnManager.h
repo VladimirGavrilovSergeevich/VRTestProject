@@ -17,12 +17,6 @@ class VRTESTPROJECT_API ASpawnManager : public AActor
 public:	
 	ASpawnManager();
 
-protected:
-
-	virtual void BeginPlay() override;
-
-public:	
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<APistol> BP_Pistol;
 
@@ -52,4 +46,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+
+	virtual void BeginPlay() override;
 };

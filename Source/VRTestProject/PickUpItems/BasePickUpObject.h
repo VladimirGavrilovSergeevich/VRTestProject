@@ -41,9 +41,4 @@ public:
 
 	UFUNCTION()
 	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
-
-	UFUNCTION(Server, unreliable, WithValidation)
-	virtual void PickUpOnServer(USceneComponent* AttachTo, FName SocketName) override;
-
-
 };

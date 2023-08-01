@@ -13,6 +13,16 @@ class VRTESTPROJECT_API ATrainingTarget : public AEnemy
 
 public:
 	ATrainingTarget();
+
+	UFUNCTION()
+	FName GetParameterOnMaterial();
+
+	UFUNCTION()
+	float GetParameterValue();
+
+	UFUNCTION()
+	void ColorChangeToCalm();
+
 	//AddComponents
 	UPROPERTY(EditDefaultsOnly, Category = "Root")
 	USceneComponent* Root;
@@ -32,6 +42,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Meshes")
 	UStaticMeshComponent* StaticMesh5;
 
+protected:
+
+	UFUNCTION()
+	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+
 private:
 
     UPROPERTY()
@@ -42,22 +57,4 @@ private:
 
 	UPROPERTY()
 	FTimerHandle FTimerHandleColorChangeToCalm;
-
-
-protected:
-
-	UFUNCTION()
-	virtual void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
-
-public:
-
-	UFUNCTION()
-	FName GetParameterOnMaterial();
-
-	UFUNCTION()
-	float GetParameterValue();
-
-	UFUNCTION()
-	void ColorChangeToCalm();
-
 };

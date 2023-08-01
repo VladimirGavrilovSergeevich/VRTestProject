@@ -13,10 +13,8 @@ class VRTESTPROJECT_API AEnemy : public AActor
 public:	
 	AEnemy();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:	
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void BeginPlay() override;
 };
