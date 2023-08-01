@@ -10,8 +10,6 @@ void USpawnWeapons::NativeOnInitialized()
 	if (SpawnWeaponPistolButton && SpawnWeaponUziButton)
 	{
 		SpawnWeaponPistolButton->OnReleased.AddDynamic(this, &USpawnWeapons::SpawnPistolWeapon);
-		//SpawnWeaponPistolButton->OnReleased.AddDynamic(this, &USpawnWeapons::TestSpawnPistolWeaponFromCharacter);
-
 		SpawnWeaponUziButton->OnReleased.AddDynamic(this, &USpawnWeapons::SpawnUziWeapon);
 	}
 }
@@ -23,11 +21,6 @@ void USpawnWeapons::SpawnPistolWeapon()
 	{
 		CurrentPlayerController->CallSpawnPistolWeaponOnServerFromPlayerController();
 	}
-	//auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-	//if (SpawnManager)
-	//{
-	//	SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Pistol);
-	//}
 }
 
 void USpawnWeapons::SpawnUziWeapon()
@@ -37,29 +30,6 @@ void USpawnWeapons::SpawnUziWeapon()
 	{
 		CurrentPlayerController->CallSpawnUziWeaponOnServerFromPlayerController();
 	}
-
-	//auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-	//if (SpawnManager)
-	//{
-	//	SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Uzi);
-	//}
 }
 
-//void USpawnWeapons::TestSpawnPistolWeaponFromCharacter()
-//{
-//	auto CurrentPlayerController = Cast<AVRTestProjectPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	//if (CurrentPlayerController)
-//	{
-//		CurrentPlayerController->CallSpawnPistolWeaponOnServerFromPlayerController();
-//	}
-//}
 
-//void USpawnWeapons::CallSpawnPistolWeaponOnServerFromClient_Implementation()
-//{
-//	SpawnPistolWeapon();
-//}
-
-//bool USpawnWeapons::CallSpawnPistolWeaponOnServerFromClient_Validate()
-//{
-//	return true;
-//}

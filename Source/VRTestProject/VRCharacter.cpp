@@ -143,55 +143,7 @@ void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAction("TriggerLeftAction", IE_Released, this, &AVRCharacter::TriggerLeftActionReleased);
 }
 
-void AVRCharacter::CallPickUpOnServerFromClient_Implementation(USceneComponent* AttachTo, FName SocketName, AActor* AttachedActorInHand)
-{
-	//Drop();
-	/////AttachedActorInHand->DisableComponentsSimulatePhysics();
-	//AttachedActorInHand->SetSimulatePhysics(false);
-	/////AttachedActorInHand->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "PistolSocket");
-	/////TestAttachedActorLeftHand = AttachedActorInHand;
-	//CharacterRef = AttachTo->GetOwner();
-	//WeaponAttachToHandNow = AttachTo;
-
-	//SendCountHandAmmoInWeapon(CurrentAmmoCount);
-	////////////////
-	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorInHand);
-	if (Interface)
-	{
-		//if (!HasAuthority())
-		//{
-			Interface->PickUp(AttachTo, SocketName);
-			this->AttachedActorLeftHand = AttachedActorInHand;
-	}
-	//	}
-	}
-//	Interface->PickUp(AttachTo, SocketName);
-	
-
-bool AVRCharacter::CallPickUpOnServerFromClient_Validate(USceneComponent* AttachTo, FName SocketName, AActor* Interface1)
-{
-	return true;
-}
-
-void AVRCharacter::CallDropOnServerFromClient_Implementation()
-{
-	//TestAttachedActorLeftHand->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-	//TestAttachedActorLeftHand->drop()
-	//PickUpOrDrop = true;
-	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-	if (Interface)
-	{
-		Interface->Drop();
-	//	AttachedActorLeftHand = nullptr;
-	}
-}
-
-bool AVRCharacter::CallDropOnServerFromClient_Validate()
-{
-	return true;
-}
-
-void AVRCharacter::TestGripLeftServerFunction_Implementation(float GripRate)
+void AVRCharacter::CallPickUpOrDropOnServerFromClientForLeftHand_Implementation(float GripRate)
 {
 	if (GripRate > 0.5f)
 	{
@@ -230,21 +182,18 @@ void AVRCharacter::TestGripLeftServerFunction_Implementation(float GripRate)
 		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
 		if (Interface)
 		{
-			//CallDropOnServerFromClient();
 				Interface->Drop();
-
 				AttachedActorLeftHand = nullptr;
 		}
-
 	}
 }
 
-bool AVRCharacter::TestGripLeftServerFunction_Validate(float GripRate)
+bool AVRCharacter::CallPickUpOrDropOnServerFromClientForLeftHand_Validate(float GripRate)
 {
 	return true;
 }
 
-void AVRCharacter::TestGripRightServerFunction_Implementation(float GripRate)
+void AVRCharacter::CallPickUpOrDropOnServerFromClientForRightHand_Implementation(float GripRate)
 {
 	if (GripRate > 0.5f)
 	{
@@ -283,59 +232,18 @@ void AVRCharacter::TestGripRightServerFunction_Implementation(float GripRate)
 		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
 		if (Interface)
 		{
-			//CallDropOnServerFromClient();
 			Interface->Drop();
 			AttachedActorRightHand = nullptr;
 		}
-
-
 	}
 }
-bool AVRCharacter::TestGripRightServerFunction_Validate(float GripRate)
+bool AVRCharacter::CallPickUpOrDropOnServerFromClientForRightHand_Validate(float GripRate)
 {
 	return true;
 }
 void AVRCharacter::CallDoFireAndStopFireOnServerFromClientForLeftHand_Implementation(float TriggerValue)
 {
 	DoFireAndStopFire(TriggerValue, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft, LeftHandPointingAtWidget);
-/*	if (LeftHandPointingAtWidget)
-	{
-		return;
-	}
-	if (TriggerValue > 0.5f)
-	{
-		if (!CanTryTriggerLeft)
-		{
-			return;
-		}
-		CanTryTriggerLeft = false;
-		if (AttachedActorLeftHand == nullptr)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-		if (Interface)
-		{
-			Interface->Fire();
-			CanTryTriggerLeft = false;
-			CanTryStopFireLeft = true;
-			return;
-		}
-	}
-	else
-	{
-		CanTryTriggerLeft = true;
-		if (!CanTryStopFireLeft || AttachedActorLeftHand == nullptr)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-		if (Interface)
-		{
-			Interface->StopFire();
-			CanTryStopFireLeft = false;
-		}
-	}*/
 }
 
 bool AVRCharacter::CallDoFireAndStopFireOnServerFromClientForLeftHand_Validate(float TriggerValue)
@@ -346,44 +254,6 @@ bool AVRCharacter::CallDoFireAndStopFireOnServerFromClientForLeftHand_Validate(f
 void AVRCharacter::CallDoFireAndStopFireOnServerFromClientForRightHand_Implementation(float TriggerValue)
 {
 	DoFireAndStopFire(TriggerValue, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
-/*	if (RightHandPointingAtWidget)
-	{
-		return;
-	}
-	if (TriggerValue > 0.5f)
-	{
-		if (!CanTryTriggerRight)
-		{
-			return;
-		}
-		CanTryTriggerRight = false;
-		if (AttachedActorRightHand == nullptr)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-		if (Interface)
-		{
-			Interface->Fire();
-			CanTryTriggerRight = false;
-			CanTryStopFireRight = true;
-			return;
-		}
-	}
-	else
-	{
-		CanTryTriggerRight = true;
-		if (!CanTryStopFireRight || AttachedActorRightHand == nullptr)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-		if (Interface)
-		{
-			Interface->StopFire();
-			CanTryStopFireRight = false;
-		}
-	}*/
 }
 
 bool AVRCharacter::CallDoFireAndStopFireOnServerFromClientForRightHand_Validate(float TriggerValue)
@@ -398,52 +268,7 @@ void AVRCharacter::GripLeft(float Rate)
 	}
 	
 	LeftHandAnimInstance->Grip = Rate;
-	TestGripLeftServerFunction(Rate);
-	/*
-	if (LeftHandAnimInstance->Grip > 0.5f)
-	{
-		if (!CanTryGrabLeft)
-		{
-	 	    return;
-		}
-		CanTryGrabLeft = false;
-		if (AttachedActorLeftHand != nullptr)
-		{
-		    return;
-		}
-		AttachedActorLeftHand = GetGrabItemNearMotionController(MotionControllerLeft, HandMeshLeft);
-		if (AttachedActorLeftHand == nullptr)
-		{
-		    return;
-		}
-		CheckAndCallPickUpViaInterface(AttachedActorLeftHand, HandMeshLeft, "None");
-		if (AttachedActorRightHand == AttachedActorLeftHand)
-		{
-		    AttachedActorRightHand = nullptr;
-		}	      
-    }
-	else
-	{
-		CanTryGrabLeft = true;
-
-		if (AttachedActorLeftHand == nullptr)
-		{
-			return;
-		}
-		if (WeaponDropDelay)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-		if (Interface)
-		{
-			CallDropOnServerFromClient();
-		//	Interface->Drop();
-			
-		//	AttachedActorLeftHand = nullptr;
-		}
-		
-	}*/
+	CallPickUpOrDropOnServerFromClientForLeftHand(Rate);
 }
 
 void AVRCharacter::GripRight(float Rate)
@@ -454,51 +279,7 @@ void AVRCharacter::GripRight(float Rate)
 	}
     RightHandAnimInstance->Grip = Rate;
 
-	TestGripRightServerFunction(Rate);
-	/*if (RightHandAnimInstance->Grip > 0.5f)
-	{
-		if (!CanTryGrabRight)
-		{
-			return;
-		}
-		CanTryGrabRight = false;
-		if (AttachedActorRightHand != nullptr)
-		{
-			return;
-		}
-		AttachedActorRightHand = GetGrabItemNearMotionController(MotionControllerRight, HandMeshRight);
-		if (AttachedActorRightHand == nullptr)
-		{
-			return;
-		}
-		CheckAndCallPickUpViaInterface(AttachedActorRightHand, HandMeshRight, "None");
-		if (AttachedActorRightHand == AttachedActorLeftHand)
-		{
-			AttachedActorLeftHand = nullptr;
-		}
-	}
-	else
-	{
-		CanTryGrabRight = true;
-
-		if (AttachedActorRightHand == nullptr)
-		{
-			return;
-		}
-		if (WeaponDropDelay)
-		{
-			return;
-		}
-		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-		if (Interface)
-		{
-			CallDropOnServerFromClient();
-			Interface->Drop();
-			AttachedActorRightHand = nullptr;
-		}
-		
-
-	}*/
+	CallPickUpOrDropOnServerFromClientForRightHand(Rate);
 }
 
 void AVRCharacter::TriggerLeft(float Rate)
@@ -509,7 +290,6 @@ void AVRCharacter::TriggerLeft(float Rate)
 	}
     LeftHandAnimInstance->Trigger = Rate;
 	CallDoFireAndStopFireOnServerFromClientForLeftHand(LeftHandAnimInstance->Trigger);
-	//DoFireAndStopFire(LeftHandAnimInstance->Trigger, CanTryTriggerLeft, AttachedActorLeftHand, CanTryStopFireLeft, LeftHandPointingAtWidget);
 }
 
 void AVRCharacter::TriggerRight(float Rate)
@@ -520,7 +300,6 @@ void AVRCharacter::TriggerRight(float Rate)
 	}
 	RightHandAnimInstance->Trigger = Rate;
 	CallDoFireAndStopFireOnServerFromClientForRightHand(RightHandAnimInstance->Trigger);
-//	DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
 }
 
 void AVRCharacter::MoveForward(float Value)
@@ -684,18 +463,7 @@ void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, U
 	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorInHand);
 	if (Interface)
 	{
-	//	if (!HasAuthority())
-	//	{
 			Interface->PickUp(AttachTo,SocketName);
-	//	}
-	//	else
-	//	{
-			////////CallPickUpOnServerFromClient(AttachTo, SocketName, AttachedActorInHand);
-			//CallPickUpOnServerFromClient(AttachTo,SocketName, Interface);
-			//Interface->PickUpOnServer(AttachTo, SocketName);
-	//	}
-		//Interface->PickUpOnServer(AttachTo,SocketName);
-		//Interface->PickUp(AttachTo,SocketName);
 	}
 }
 
@@ -842,41 +610,6 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 	}
 }
 
-void AVRCharacter::OnRep_PickUpOrDrop()
-{
-//	TestAttachedActorLeftHand->DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-
-	//AttachedActorLeftHand->
-	//AttachedActorInHand->SetSimulatePhysics(false);
-	//AttachedActorLeftHand->AttachToComponent(AttachTo, FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), "PistolSocket");
-
-	//IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
-	//if (Interface)
-	//{
-	//	Interface->Drop();
-	//	AttachedActorLeftHand = nullptr;
-	//}
-	//StopFire();
-	//DetachFromActor(FDetachmentTransformRules::KeepRelativeTransform);
-	//StaticMesh->SetSimulatePhysics(true);
-
-	//SendCountHandAmmoInWeapon(0);
-
-	//WeaponAttachToHandNow = nullptr;
-//	CallDropOnServerFromClient();
-	//if (!HasAuthority())
-	//{
-	//	return;
-	//}
-	//AttachedActorLeftHand, HandMeshLeft
-//	IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorRightHand);
-//	if (Interface)
-//	{
-//		Interface->PickUp(HandMeshRight, "None");
-		//Interface->PickUp(AttachTo,SocketName);
-//	}
-}
-
 void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacterHMDStruct HMDStruct)
 {
 	OnRep_VRCharacterHMDStruct();
@@ -888,15 +621,10 @@ bool AVRCharacter::RepVRCharacterHMDStructFromClient_Validate(FVRCharacterHMDStr
 	return true;
 }
 
-void AVRCharacter::PickUpOnServer_Implementation(USceneComponent* AttachTo, FName SocketName)
+void AVRCharacter::PickUpOnServer(USceneComponent* AttachTo, FName SocketName)
 {
-//	PickUpOrDrop = true;
 }
 
-bool AVRCharacter::PickUpOnServer_Validate(USceneComponent* AttachTo, FName SocketName)
-{
-	return true;
-}
 
 
 

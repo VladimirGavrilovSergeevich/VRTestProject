@@ -98,8 +98,6 @@ public:
 	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
 	FVRCharacterHMDStruct VRCharacterHMDStruct;
 
-	UPROPERTY(replicatedUsing = OnRep_PickUpOrDrop)
-	bool PickUpOrDrop = false;
 private:
 //public:
 
@@ -197,7 +195,6 @@ public:
 
 	virtual void RightHandAmmoInWeapon(int32 AmmoCount) override;
 
-	UFUNCTION(Server, unreliable, WithValidation)
 	virtual void PickUpOnServer(USceneComponent* AttachTo, FName SocketName) override;
 
 	//Get
@@ -242,31 +239,20 @@ public:
 	UFUNCTION()
 	void OnRep_VRCharacterHMDStruct();
 
-	UFUNCTION()
-	void OnRep_PickUpOrDrop();
-
 	UFUNCTION(Server, unreliable, WithValidation)
 	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
 
 	UFUNCTION(Server, reliable, WithValidation)
-	void CallPickUpOnServerFromClient(USceneComponent* AttachTo, FName SocketName, AActor* AttachedActorInHand);
+	void CallPickUpOrDropOnServerFromClientForLeftHand(float GripRate);
 
 	UFUNCTION(Server, reliable, WithValidation)
-	void CallDropOnServerFromClient();
-
-	UFUNCTION(Server, reliable, WithValidation)
-	void TestGripLeftServerFunction(float GripRate);
-
-	UFUNCTION(Server, reliable, WithValidation)
-	void TestGripRightServerFunction(float GripRate);
+	void CallPickUpOrDropOnServerFromClientForRightHand(float GripRate);
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void CallDoFireAndStopFireOnServerFromClientForLeftHand(float TriggerValue);
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void CallDoFireAndStopFireOnServerFromClientForRightHand(float TriggerValue);
-	//float TriggerValue, bool& CanTryTrigger, AActor* AttachedActorHand, bool& CanTryStopFire, bool& HandPointingAtWidget
-
 
 private:
 	//Input Hand
