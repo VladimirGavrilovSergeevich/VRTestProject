@@ -21,6 +21,7 @@ AEnemyRhombus::AEnemyRhombus():Super()
 	SceneComponent1 = CreateDefaultSubobject<USceneComponent>("MuzzleShootingPoint1");
 	SceneComponent1->SetupAttachment(Root);
 	SceneComponent2 = CreateDefaultSubobject<USceneComponent>("MuzzleShootingPoint2");
+
 	SceneComponent2->SetupAttachment(Root);
 }
 
@@ -68,8 +69,35 @@ void AEnemyRhombus::StopFire()
 	StaticMesh9->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 0);
 }
 
+void AEnemyRhombus::GetAllCharacters()
+{
+
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVRCharacter::StaticClass(), FoundActors);
+	for (int i = 0; i < FoundActors.Num(); ++i)
+	{
+		
+		if (IsValid(FoundActors[i]))
+		{
+			AllAVRCharacterOnMap.AddUnique(Cast<AVRCharacter>(FoundActors[i]));
+		}
+		if (GetSquaredDistanceTo(AllAVRCharacterOnMap[i]) < GetSquaredDistanceTo(CharacterRef))
+		{
+			CharacterRef = AllAVRCharacterOnMap[i];
+		}
+
+	}
+}
+
 void AEnemyRhombus::Tick(float DeltaTime)
 {
+	for (int i = 0; i < AllAVRCharacterOnMap.Num(); i++)
+	{
+		if (GetSquaredDistanceTo(AllAVRCharacterOnMap[i])< GetSquaredDistanceTo(CharacterRef))
+		{
+			CharacterRef = AllAVRCharacterOnMap[i];
+		}
+	}
 	if (IsValid(CharacterRef))
 	{
 		AddActorLocalOffset(FVector(0, 0, (cos(GetGameTimeSinceCreation()) * 50 * DeltaTime))); //up and down motion actor
@@ -80,7 +108,6 @@ void AEnemyRhombus::Tick(float DeltaTime)
 	}
 }
 
-
 void AEnemyRhombus::BeginPlay()
 {
 	Super::BeginPlay();
@@ -88,4 +115,5 @@ void AEnemyRhombus::BeginPlay()
 	{
 		CharacterRef = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	}
+	GetWorldTimerManager().SetTimer(FTimerHandleGetAllCharacters, this, &AEnemyRhombus::GetAllCharacters, 5.0, false);//TODO
 }

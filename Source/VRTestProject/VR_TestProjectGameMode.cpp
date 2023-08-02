@@ -3,3 +3,9 @@
 
 #include "VR_TestProjectGameMode.h"
 
+void AVR_TestProjectGameMode::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
+	
+	MatchHasStarted.Broadcast();
+}
