@@ -7,10 +7,9 @@
 #include "Enemy/EnemyBullet.h"
 #include "Net/UnrealNetwork.h"
 #include "Managers/SpawnManager.h"
+#include "GameFramework/PlayerStart.h"
 
-AVRCharacter::AVRCharacter() :
-	//init Variable
-	Health(MaxHealth)
+AVRCharacter::AVRCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -54,6 +53,7 @@ AVRCharacter::AVRCharacter() :
 	OnActorHit.AddDynamic(this, &AVRCharacter::OnHit);
 
 	bReplicates = true;
+	SetHealthCharacterOnServerFromClient(MaxHealth);
 }
 
 void AVRCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const
@@ -64,6 +64,16 @@ void AVRCharacter::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLi
 	DOREPLIFETIME(AVRCharacter, VRCharacterHMDStruct);
 	DOREPLIFETIME(AVRCharacter, HandMeshRight);
 	DOREPLIFETIME(AVRCharacter, HandMeshLeft);
+
+	DOREPLIFETIME_CONDITION(AVRCharacter, Health, COND_InitialOrOwner);
+	DOREPLIFETIME_CONDITION(AVRCharacter, LeftHandCurrentAmmoCountInWeapon, COND_InitialOrOwner);
+	DOREPLIFETIME_CONDITION(AVRCharacter, RightHandCurrentAmmoCountInWeapon, COND_InitialOrOwner);
+
+	DOREPLIFETIME_CONDITION(AVRCharacter, GripLeftValueOnServer, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AVRCharacter, GripRightValueOnServer, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AVRCharacter, TriggerLeftValueOnServer, COND_SkipOwner);
+	DOREPLIFETIME_CONDITION(AVRCharacter, TriggerRightValueOnServer, COND_SkipOwner);
+
 }
 void AVRCharacter::BeginPlay()
 {
@@ -98,9 +108,7 @@ void AVRCharacter::Tick(float DeltaTime)
 
 	UpdateSplineMesh(SplineComponentRight, SplineMeshComponentRight);
 	UpdateSplineMesh(SplineComponentLeft, SplineMeshComponentLeft);
-	///
-//	if (!HasAuthority())
-	//{
+
 		FVRCharacterHMDStruct HMDTempStruct;
 		HMDTempStruct.MotionControllerRightLocalLocation = MotionControllerRight->GetRelativeLocation();
 		HMDTempStruct.MotionControllerRightLocalRotation = MotionControllerRight->GetRelativeRotation();
@@ -115,7 +123,6 @@ void AVRCharacter::Tick(float DeltaTime)
 		HMDTempStruct.VRCamera = VRCamera;
 
 		RepVRCharacterHMDStructFromClient(HMDTempStruct);
-	//}
 }
 
 void AVRCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -264,6 +271,7 @@ void AVRCharacter::GripLeft(float Rate)
 	
 	LeftHandAnimInstance->Grip = Rate;
 	CallPickUpOrDropOnServerFromClientForLeftHand(Rate);
+	SetGripLeftHandAnimValueOnServer(Rate);
 }
 
 void AVRCharacter::GripRight(float Rate)
@@ -275,6 +283,7 @@ void AVRCharacter::GripRight(float Rate)
     RightHandAnimInstance->Grip = Rate;
 
 	CallPickUpOrDropOnServerFromClientForRightHand(Rate);
+	SetGripRightHandAnimValueOnServer(Rate);
 }
 
 void AVRCharacter::TriggerLeft(float Rate)
@@ -285,6 +294,7 @@ void AVRCharacter::TriggerLeft(float Rate)
 	}
     LeftHandAnimInstance->Trigger = Rate;
 	CallDoFireAndStopFireOnServerFromClientForLeftHand(LeftHandAnimInstance->Trigger);
+	SetTriggerLeftHandAnimValueOnServer(Rate);
 }
 
 void AVRCharacter::TriggerRight(float Rate)
@@ -295,6 +305,7 @@ void AVRCharacter::TriggerRight(float Rate)
 	}
 	RightHandAnimInstance->Trigger = Rate;
 	CallDoFireAndStopFireOnServerFromClientForRightHand(RightHandAnimInstance->Trigger);
+	SetTriggerRightHandAnimValueOnServer(Rate);
 }
 
 void AVRCharacter::MoveForward(float Value)
@@ -412,18 +423,6 @@ void AVRCharacter::DoPressButtonOnWidget(float& TriggerValue, bool& CanTryTrigge
 
 }
 
-void AVRCharacter::ChooseToPressButtonOrShoot()
-{
-	if (RightHandPointingAtWidget)
-	{
-	//	
-	}
-	else
-	{
-		DoFireAndStopFire(RightHandAnimInstance->Trigger, CanTryTriggerRight, AttachedActorRightHand, CanTryStopFireRight, RightHandPointingAtWidget);
-	}
-}
-
 void AVRCharacter::SpawnWeaponInHand(AActor* AttachedActorInHand,TEnumAsByte<LastWeaponInHand>& LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef)
 {
 	AttachedActorInHand = GameManagerRef->SpawnWeapon(LastWeaponInHand, HandMesh->GetComponentLocation(), HandMesh->GetComponentRotation());
@@ -437,11 +436,14 @@ void AVRCharacter::SpawnWeaponInHand(AActor* AttachedActorInHand,TEnumAsByte<Las
 
 void AVRCharacter::DeadCharacter()
 {
+	//its for single-player save-system (old task )
 	auto GameManagerRef = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
 	if (!GameManagerRef)
 	GameManagerRef->ClearValueOfWeaponInHand(CurrentGameInstance->LastWeaponInLeftHand);
 	GameManagerRef->ClearValueOfWeaponInHand(CurrentGameInstance->LastWeaponInRightHand);
-	UGameplayStatics::OpenLevel(GetWorld(), "MainMap");
+
+	SetActorLocation(Cast<APlayerStart>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass()))->GetActorLocation());
+	SetHealthCharacterOnServerFromClient(MaxHealth);
 }
 
 void AVRCharacter::PickUp(USceneComponent* AttachTo, FName SocketName)
@@ -452,6 +454,85 @@ void AVRCharacter::Drop()
 {
 }
 
+
+void AVRCharacter::CallDeadCharacterOnServerFromClient_Implementation()
+{
+	DeadCharacter();
+}
+
+bool AVRCharacter::CallDeadCharacterOnServerFromClient_Validate()
+{
+	return true;
+}
+
+void AVRCharacter::SetHealthCharacterOnServerFromClient_Implementation(float NewHealth)
+{
+	Health = NewHealth;
+}
+
+bool AVRCharacter::SetHealthCharacterOnServerFromClient_Validate(float NewHealth)
+{
+	return true;
+}
+
+void AVRCharacter::LeftHandAmmoInWeaponOnServerFromClient_Implementation(int32 NewAmmoCount)
+{
+	LeftHandCurrentAmmoCountInWeapon = NewAmmoCount;
+}
+
+bool AVRCharacter::LeftHandAmmoInWeaponOnServerFromClient_Validate(int32 NewAmmoCount)
+{
+	return true;
+}
+
+void AVRCharacter::RightHandAmmoInWeaponOnServerFromClient_Implementation(int32 NewAmmoCount)
+{
+	RightHandCurrentAmmoCountInWeapon = NewAmmoCount;
+}
+
+bool AVRCharacter::RightHandAmmoInWeaponOnServerFromClient_Validate(int32 NewAmmoCount)
+{
+	return true;
+}
+
+void AVRCharacter::SetGripLeftHandAnimValueOnServer_Implementation(float GripLeftValue)
+{
+	GripLeftValueOnServer = GripLeftValue;
+}
+
+bool AVRCharacter::SetGripLeftHandAnimValueOnServer_Validate(float GripLeftValue)
+{
+	return true;
+}
+
+void AVRCharacter::SetGripRightHandAnimValueOnServer_Implementation(float GripRightValue)
+{
+	GripRightValueOnServer = GripRightValue;
+}
+bool AVRCharacter::SetGripRightHandAnimValueOnServer_Validate(float GripRightValue)
+{
+	return true;
+}
+
+void AVRCharacter::SetTriggerLeftHandAnimValueOnServer_Implementation(float TriggerLeftValue)
+{
+	TriggerLeftValueOnServer = TriggerLeftValue;
+}
+
+bool AVRCharacter::SetTriggerLeftHandAnimValueOnServer_Validate(float TriggerLeftValue)
+{
+	return true;
+}
+
+void AVRCharacter::SetTriggerRightHandAnimValueOnServer_Implementation(float TriggerRightValue)
+{
+	TriggerRightValueOnServer = TriggerRightValue;
+}
+
+bool AVRCharacter::SetTriggerRightHandAnimValueOnServer_Validate(float TriggerRightValue)
+{
+	return true;
+}
 
 void AVRCharacter::CheckAndCallPickUpViaInterface(AActor* AttachedActorInHand, USceneComponent* AttachTo, FName SocketName)
 {
@@ -507,11 +588,11 @@ void AVRCharacter::StopFire()
 }
 void AVRCharacter::LeftHandAmmoInWeapon(int32 AmmoCount)
 {
-	LeftHandCurrentAmmoCountInWeapon = AmmoCount;
+	LeftHandAmmoInWeaponOnServerFromClient(AmmoCount);
 }
 void AVRCharacter::RightHandAmmoInWeapon(int32 AmmoCount)
 {
-	RightHandCurrentAmmoCountInWeapon = AmmoCount;
+	RightHandAmmoInWeaponOnServerFromClient(AmmoCount);
 }
 float AVRCharacter::GetHealth() const
 {
@@ -574,20 +655,16 @@ void AVRCharacter::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalIm
 	{
 		return;
 	}
-	Health -= 10;
+	SetHealthCharacterOnServerFromClient(Health -= 10);
 
 	if (Health <= 0)
 	{
-		DeadCharacter();
+		CallDeadCharacterOnServerFromClient();
 	}
 }
 
 void AVRCharacter::OnRep_VRCharacterHMDStruct()
 {
-	//if (HasAuthority())
-	//{
-	//	return;
-	//}
 	if (IsValid(MotionControllerRight))
 	{
 		MotionControllerRight->SetRelativeLocation(VRCharacterHMDStruct.MotionControllerRightLocalLocation);
@@ -604,6 +681,28 @@ void AVRCharacter::OnRep_VRCharacterHMDStruct()
 		VRCamera->SetRelativeRotation(VRCharacterHMDStruct.VRCameraLocalRotation);
 	}
 }
+
+void AVRCharacter::OnRep_GripLeftValueOnServer()
+{
+	LeftHandAnimInstance->Grip = GripLeftValueOnServer;
+}
+
+void AVRCharacter::OnRep_GripRightValueOnServer()
+{
+	RightHandAnimInstance->Grip = GripRightValueOnServer;
+}
+
+void AVRCharacter::OnRep_TriggerLeftValueOnServer()
+{
+	LeftHandAnimInstance->Trigger = TriggerLeftValueOnServer;
+}
+
+void AVRCharacter::OnRep_TriggerRightValueOnServer()
+{
+	RightHandAnimInstance->Trigger = TriggerRightValueOnServer;
+}
+
+
 
 void AVRCharacter::RepVRCharacterHMDStructFromClient_Implementation(FVRCharacterHMDStruct HMDStruct)
 {

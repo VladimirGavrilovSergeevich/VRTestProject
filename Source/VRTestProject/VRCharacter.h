@@ -110,6 +110,18 @@ public:
 	UFUNCTION()
 	void OnRep_VRCharacterHMDStruct();
 
+	UFUNCTION()
+	void OnRep_GripLeftValueOnServer();
+
+	UFUNCTION()
+	void OnRep_GripRightValueOnServer();
+
+	UFUNCTION()
+	void OnRep_TriggerLeftValueOnServer();
+
+	UFUNCTION()
+	void OnRep_TriggerRightValueOnServer();
+
 	UFUNCTION(Server, unreliable, WithValidation)
 	void RepVRCharacterHMDStructFromClient(FVRCharacterHMDStruct HMDStruct);
 
@@ -124,6 +136,30 @@ public:
 
 	UFUNCTION(Server, reliable, WithValidation)
 	void CallDoFireAndStopFireOnServerFromClientForRightHand(float TriggerValue);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void CallDeadCharacterOnServerFromClient();
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void SetHealthCharacterOnServerFromClient(float NewHealth);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void LeftHandAmmoInWeaponOnServerFromClient(int32 NewAmmoCount);
+
+	UFUNCTION(Server, reliable, WithValidation)
+	void RightHandAmmoInWeaponOnServerFromClient(int32 NewAmmoCount);
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	void SetGripLeftHandAnimValueOnServer(float GripLeftValue);
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	void SetGripRightHandAnimValueOnServer(float GripRightValue);
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	void SetTriggerLeftHandAnimValueOnServer(float TriggerLeftValue);
+
+	UFUNCTION(Server, unreliable, WithValidation)
+	void SetTriggerRightHandAnimValueOnServer(float TriggerRightValue);
 
 	//
 	UFUNCTION(BlueprintCallable, Category = "Interface")
@@ -174,6 +210,26 @@ public:
 	UPROPERTY(replicatedUsing = OnRep_VRCharacterHMDStruct)
 	FVRCharacterHMDStruct VRCharacterHMDStruct;
 
+	UPROPERTY(replicated)
+	float Health;
+
+	UPROPERTY(replicated)
+	int32 LeftHandCurrentAmmoCountInWeapon = 0;
+
+	UPROPERTY(replicated)
+	int32 RightHandCurrentAmmoCountInWeapon = 0;
+	UPROPERTY(replicatedUsing = OnRep_GripLeftValueOnServer)
+	float GripLeftValueOnServer;
+
+	UPROPERTY(replicatedUsing = OnRep_GripRightValueOnServer)
+	float GripRightValueOnServer;
+
+	UPROPERTY(replicatedUsing = OnRep_TriggerLeftValueOnServer)
+	float TriggerLeftValueOnServer;
+
+	UPROPERTY(replicatedUsing = OnRep_TriggerRightValueOnServer)
+	float TriggerRightValueOnServer;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -218,10 +274,6 @@ private:
 	//Input Fire or Widget
 	UFUNCTION()
 	void DoFireAndStopFire(float& TriggerValue, bool& CanTryTrigger, AActor* AttachedActorHand, bool& CanTryStopFire, bool& HandPointingAtWidget);
-
-	UFUNCTION()
-	void ChooseToPressButtonOrShoot();
-
 
 	UFUNCTION()
 	void DoPressButtonOnWidget(float& TriggerValue, bool& CanTryTrigger);
@@ -273,8 +325,6 @@ private:
 	//Health
 	const float MaxHealth = 100;
 
-	float Health;
-
 	//Widgets
 	bool RightHandPointingAtWidget = false;
 
@@ -282,10 +332,6 @@ private:
 
 	//Weapon
 	bool WeaponDropDelay = true;
-
-	int32 LeftHandCurrentAmmoCountInWeapon = 0;
-
-	int32 RightHandCurrentAmmoCountInWeapon = 0;
 
 	//
 	UPROPERTY()

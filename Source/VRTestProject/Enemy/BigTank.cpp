@@ -18,6 +18,14 @@ ABigTank::ABigTank():Super()
 
 void ABigTank::Tick(float DeltaTime)
 {
+	for (int i = 0; i < AllAVRCharacterOnMap.Num(); i++)
+	{
+		if (GetSquaredDistanceTo(AllAVRCharacterOnMap[i]) < GetSquaredDistanceTo(CharacterRef))
+		{
+			CharacterRef = AllAVRCharacterOnMap[i];
+		}
+	}
+
 	if (IsValid(CharacterRef))
 	{
 		AddActorLocalOffset(FVector(((cos(GetGameTimeSinceCreation() / 10) * 100 * DeltaTime)), 0, 0));// motion actor
