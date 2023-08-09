@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "VRTestProjectGameInstance.h"
 #include "Components/SplineMeshComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/WidgetInteractionComponent.h"
@@ -278,15 +277,9 @@ private:
 	UFUNCTION()
 	void DoPressButtonOnWidget(float& TriggerValue, bool& CanTryTrigger);
 
-	//SpawnCharacter
-	UFUNCTION()
-	void SpawnWeaponInHand(AActor* AttachedActorInHand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef);
-
+	//DeadCharacter
 	UFUNCTION()
 	void DeadCharacter();
-
-	UFUNCTION()
-	void SetWasTransitionBetweenLevels();
 
 	//Animations
 	UPROPERTY()
@@ -329,14 +322,4 @@ private:
 	bool RightHandPointingAtWidget = false;
 
 	bool LeftHandPointingAtWidget = false;
-
-	//Weapon
-	bool WeaponDropDelay = true;
-
-	//
-	UPROPERTY()
-	FTimerHandle FTimerHandleWasTransitionBetweenLevels;
-
-	UPROPERTY()
-	UVRTestProjectGameInstance* CurrentGameInstance;
 };

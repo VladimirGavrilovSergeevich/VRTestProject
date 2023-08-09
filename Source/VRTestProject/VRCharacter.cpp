@@ -81,21 +81,6 @@ void AVRCharacter::BeginPlay()
 	//init Variable after Cast
 	LeftHandAnimInstance = Cast<UHandAnimInstance>(HandMeshLeft->GetAnimInstance());
 	RightHandAnimInstance = Cast<UHandAnimInstance>(HandMeshRight->GetAnimInstance());
-
-	CurrentGameInstance = Cast<UVRTestProjectGameInstance>(GetWorld()->GetGameInstance());
-	if (!CurrentGameInstance)
-	{
-		return;
-	}
-	auto GameManagerRef = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-	if (!GameManagerRef)
-	{
-		return;
-	}
-	SpawnWeaponInHand(AttachedActorLeftHand, CurrentGameInstance->LastWeaponInLeftHand, HandMeshLeft, GameManagerRef);
-	SpawnWeaponInHand(AttachedActorRightHand, CurrentGameInstance->LastWeaponInRightHand, HandMeshRight, GameManagerRef);
-	GetWorldTimerManager().SetTimer(FTimerHandleWasTransitionBetweenLevels, this, &AVRCharacter::SetWasTransitionBetweenLevels, 0.5, true); //this is necessary the weapon does not fall from the hands when changing the level
-
 }
 
 void AVRCharacter::Tick(float DeltaTime)
@@ -177,10 +162,6 @@ void AVRCharacter::CallPickUpOrDropOnServerFromClientForLeftHand_Implementation(
 		{
 			return;
 		}
-		if (WeaponDropDelay)
-		{
-			return;
-		}
 		IInteractionWithObjects* Interface = Cast<IInteractionWithObjects>(AttachedActorLeftHand);
 		if (Interface)
 		{
@@ -224,10 +205,6 @@ void AVRCharacter::CallPickUpOrDropOnServerFromClientForRightHand_Implementation
 		CanTryGrabRight = true;
 
 		if (AttachedActorRightHand == nullptr)
-		{
-			return;
-		}
-		if (WeaponDropDelay)
 		{
 			return;
 		}
@@ -423,25 +400,8 @@ void AVRCharacter::DoPressButtonOnWidget(float& TriggerValue, bool& CanTryTrigge
 
 }
 
-void AVRCharacter::SpawnWeaponInHand(AActor* AttachedActorInHand,TEnumAsByte<LastWeaponInHand>& LastWeaponInHand, USkeletalMeshComponent* HandMesh, ASpawnManager* GameManagerRef)
-{
-	AttachedActorInHand = GameManagerRef->SpawnWeapon(LastWeaponInHand, HandMesh->GetComponentLocation(), HandMesh->GetComponentRotation());
-
-	if (AttachedActorInHand == nullptr)
-	{
-		return;
-	}
-	CheckAndCallPickUpViaInterface(AttachedActorInHand, HandMesh, "None");
-}
-
 void AVRCharacter::DeadCharacter()
 {
-	//its for single-player save-system (old task )
-	auto GameManagerRef = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
-	if (!GameManagerRef)
-	GameManagerRef->ClearValueOfWeaponInHand(CurrentGameInstance->LastWeaponInLeftHand);
-	GameManagerRef->ClearValueOfWeaponInHand(CurrentGameInstance->LastWeaponInRightHand);
-
 	SetActorLocation(Cast<APlayerStart>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerStart::StaticClass()))->GetActorLocation());
 	SetHealthCharacterOnServerFromClient(MaxHealth);
 }
@@ -618,10 +578,7 @@ AActor* AVRCharacter::GetAttachedActorRightHand()
 {
 	return AttachedActorRightHand;
 }
-void AVRCharacter::SetWasTransitionBetweenLevels()
-{
-	WeaponDropDelay = false;
-}
+
 void AVRCharacter::UpdateSplineMesh(USplineComponent* SplineComponent, USplineMeshComponent* SplineMeshComponent)
 {
 	const FVector StartPoint = SplineComponent->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::Local);

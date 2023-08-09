@@ -7,5 +7,5 @@ void AVR_TestProjectGameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
 	
-	MatchHasStarted.Broadcast();
+	MatchHasStarted.Broadcast();//TODO
 }

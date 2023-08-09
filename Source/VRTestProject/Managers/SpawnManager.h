@@ -2,12 +2,19 @@
 
 #pragma once
 #include "VRCharacter.h"
-#include "VRTestProjectGameInstance.h"
 #include "Weapon/Pistol.h"
 #include "Weapon/Uzi.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SpawnManager.generated.h"
+
+UENUM()
+enum WeaponInHand
+{
+	None,
+	Pistol,
+	Uzi
+};
 
 UCLASS()
 class VRTESTPROJECT_API ASpawnManager : public AActor
@@ -23,26 +30,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AUzi> BP_Uzi;
 
-	UPROPERTY()
-	AVRCharacter* CurrentPawn;
-
-	UPROPERTY()
-	UVRTestProjectGameInstance* CurrentGameInstance;
-
 	UFUNCTION()
-	AActor* SpawnWeapon(TEnumAsByte<LastWeaponInHand>& Weapon, FVector Location, FRotator Rotation);
-
-	UFUNCTION()
-	void SpawnWeaponFromUI(LastWeaponInHand NameWeapon);
-
-	UFUNCTION()
-	void ChoiceLastWeaponInHand();
-
-	UFUNCTION()
-	void ChoiceNowForLeftOrRightHand(AActor* Hand, TEnumAsByte<LastWeaponInHand>& LastWeaponInHand);
-
-	UFUNCTION()
-	void ClearValueOfWeaponInHand(TEnumAsByte<LastWeaponInHand>& Weapon);
+	void SpawnWeaponFromUI(WeaponInHand NameWeapon);
 
 	virtual void Tick(float DeltaTime) override;
 

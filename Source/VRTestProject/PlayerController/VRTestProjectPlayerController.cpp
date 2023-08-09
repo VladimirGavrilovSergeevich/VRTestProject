@@ -10,7 +10,7 @@ void AVRTestProjectPlayerController::CallSpawnPistolWeaponOnServerFromPlayerCont
 	auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
 	if (SpawnManager)
 	{
-		SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Pistol);
+		SpawnManager->SpawnWeaponFromUI(WeaponInHand::Pistol);
 	}
 }
 
@@ -24,7 +24,7 @@ void AVRTestProjectPlayerController::CallSpawnUziWeaponOnServerFromPlayerControl
 	auto SpawnManager = Cast<ASpawnManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ASpawnManager::StaticClass()));
 	if (SpawnManager)
 	{
-		SpawnManager->SpawnWeaponFromUI(LastWeaponInHand::Uzi);
+		SpawnManager->SpawnWeaponFromUI(WeaponInHand::Uzi);
 	}
 }
 
