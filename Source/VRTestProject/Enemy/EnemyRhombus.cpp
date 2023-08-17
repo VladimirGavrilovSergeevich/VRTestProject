@@ -32,6 +32,7 @@ void AEnemyRhombus::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalI
 	{
 		return;
 	}
+	GetAllCharacters();
 	FireOn = true;
 	StaticMesh8->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 1); //change color to red
 	StaticMesh9->SetScalarParameterValueOnMaterials(GetParameterOnMaterial(), 1);
@@ -76,16 +77,11 @@ void AEnemyRhombus::GetAllCharacters()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVRCharacter::StaticClass(), FoundActors);
 	for (int i = 0; i < FoundActors.Num(); ++i)
 	{
-		
 		if (IsValid(FoundActors[i]))
 		{
 			AllAVRCharacterOnMap.AddUnique(Cast<AVRCharacter>(FoundActors[i]));
-		}
-		if (GetSquaredDistanceTo(AllAVRCharacterOnMap[i]) < GetSquaredDistanceTo(CharacterRef))
-		{
 			CharacterRef = AllAVRCharacterOnMap[i];
 		}
-
 	}
 }
 
@@ -111,9 +107,4 @@ void AEnemyRhombus::Tick(float DeltaTime)
 void AEnemyRhombus::BeginPlay()
 {
 	Super::BeginPlay();
-	if (IsValid(GetWorld()->GetFirstPlayerController()))
-	{
-		CharacterRef = Cast<AVRCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	}
-	GetWorldTimerManager().SetTimer(FTimerHandleGetAllCharacters, this, &AEnemyRhombus::GetAllCharacters, 5.0, false);//TODO
 }
