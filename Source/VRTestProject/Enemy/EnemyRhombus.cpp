@@ -87,17 +87,18 @@ void AEnemyRhombus::GetAllCharacters()
 
 void AEnemyRhombus::Tick(float DeltaTime)
 {
-	for (int i = 0; i < AllAVRCharacterOnMap.Num(); i++)
-	{
-		if (GetSquaredDistanceTo(AllAVRCharacterOnMap[i])< GetSquaredDistanceTo(CharacterRef))
-		{
-			CharacterRef = AllAVRCharacterOnMap[i];
-		}
-	}
+
+	AddActorLocalOffset(FVector(0, 0, (cos(GetGameTimeSinceCreation()) * 50 * DeltaTime))); //up and down motion actor
+
 	if (IsValid(CharacterRef))
 	{
-		AddActorLocalOffset(FVector(0, 0, (cos(GetGameTimeSinceCreation()) * 50 * DeltaTime))); //up and down motion actor
-
+		for (int i = 0; i < AllAVRCharacterOnMap.Num(); i++)
+		{
+			if (GetSquaredDistanceTo(AllAVRCharacterOnMap[i]) < GetSquaredDistanceTo(CharacterRef))
+			{
+				CharacterRef = AllAVRCharacterOnMap[i];
+			}
+		}
 		//TurnToPlayer
 		FRotator RotationStartRhombus(0,UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), CharacterRef->GetActorLocation()).Yaw,0);
 		SetActorRotation(RotationStartRhombus); // Turn to character
