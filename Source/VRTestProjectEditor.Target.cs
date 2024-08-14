@@ -8,7 +8,7 @@ public class VRTestProjectEditorTarget : TargetRules
 	public VRTestProjectEditorTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V2;
+		DefaultBuildSettings = BuildSettingsVersion.V5;
 		ExtraModuleNames.AddRange( new string[] { "VRTestProject" } );
 	}
 }
